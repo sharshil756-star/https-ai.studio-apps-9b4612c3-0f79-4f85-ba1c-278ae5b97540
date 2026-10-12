@@ -94,15 +94,18 @@ export const ReadingListDrawer: React.FC<ReadingListDrawerProps> = ({
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
-                    <button
-                      onClick={() => {
+                    <a
+                      href={`/article/${article.slug}`}
+                      onClick={(e) => {
+                        e.preventDefault();
                         onSelectArticle(article);
                         onClose();
                       }}
                       className="text-xs font-medium text-[#14532D] hover:underline flex items-center gap-1"
                     >
-                      Read <ArrowRight className="w-3 h-3" />
-                    </button>
+                      <span>Read Article: {article.title}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 {
   "name": "The Willow & Seam | Cricket Journal & Longform Editorial",
-  "description": "An attractive, longform cricket editorial and journal featuring 10 deep-dive articles on timeless technique, history, modern revolution, and cricketing lore.",
+  "description": "Explore longform cricket analysis, bowling aerodynamics, batting mechanics, pitch conditions lab, and tactical fielding blueprints in our journal.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

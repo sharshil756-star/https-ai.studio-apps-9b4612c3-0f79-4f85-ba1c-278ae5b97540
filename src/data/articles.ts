@@ -1,5 +1,5 @@
 export interface ArticleSection {
-  title?: string;
+  title?: string; // Formatted as an AEO Question (H2)
   paragraphs: string[];
   callout?: {
     title: string;
@@ -8,8 +8,14 @@ export interface ArticleSection {
   };
 }
 
+export interface ArticleFAQ {
+  question: string;
+  answer: string;
+}
+
 export interface CricketArticle {
   id: string;
+  slug: string; // Unique URL path
   title: string;
   subtitle: string;
   category: 
@@ -43,11 +49,19 @@ export interface CricketArticle {
     label: string;
   };
   artworkType: "willow" | "ball" | "ground" | "spin" | "partnership" | "t20" | "coverdrive" | "ashes" | "keeper" | "tactics";
+  artworkAlt: string; // Explicit SEO alt text for images
+  // On-Page SEO Fields (Step 3 Requirements)
+  mainKeyword: string;
+  relatedKeywords: [string, string];
+  metaTitle: string; // 30-60 characters
+  metaDescription: string; // 120-160 characters
+  faqs: ArticleFAQ[];
 }
 
 export const CRICKET_ARTICLES: CricketArticle[] = [
   {
     id: "alchemy-of-english-willow",
+    slug: "alchemy-of-english-willow",
     title: "The Alchemy of English Willow: From Suffolk Marshlands to the Test Match Crease",
     subtitle: "How master podshavers shape seasoned Salix alba caerulea clefts into the resonant instruments of cricketing immortals.",
     category: "Craft & Equipment",
@@ -55,6 +69,11 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     publishDate: "October 1, 2026",
     issue: "Vol. XII · No. 04",
     featured: true,
+    mainKeyword: "English willow cricket bats",
+    relatedKeywords: ["Salix alba caerulea", "Grade 1 cricket bat craft"],
+    metaTitle: "English Willow Cricket Bats: Craft & Grading Guide",
+    metaDescription: "Discover how master podshavers craft English willow cricket bats from Salix alba caerulea. Learn grading scales, pressing secrets, and sweet spot science.",
+    artworkAlt: "Master batmaker hand-shaping seasoned English willow cleft with a drawknife in a traditional workshop",
     statBadge: {
       value: "8-12",
       label: "Straight Grain Count in Grade 1+ Clefts"
@@ -69,14 +88,24 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "Deep in the river valleys of Essex and Suffolk grows Salix alba caerulea—a peculiar hybrid willow tree whose sapwood yields the feather-light, shock-absorbing wood from which every great cricket bat in history was born.",
     pullQuote: "A master batmaker does not force the willow into shape; he feels the grain run through the palm of his hand and obeys where the wood wishes to rebound.",
     pullQuoteAttribution: "Julian Millichamp, Legendary Batmaker",
-    tags: ["Willow", "Equipment", "Craftsmanship", "Batmaking", "English Heritage"],
+    tags: ["English Willow", "Cricket Bat Craft", "Salix Alba Caerulea", "Equipment Science", "Bat Grading"],
+    faqs: [
+      {
+        question: "Why is English willow preferred over other woods for cricket bats?",
+        answer: "English willow (Salix alba caerulea) has a unique botanical cell structure with low specific gravity and high fibrous elasticity that dampens 90 mph leather impacts while rebounding with extreme power."
+      },
+      {
+        question: "What is the difference between Grade 1 and Grade 2 cricket bats?",
+        answer: "Grade 1 willow features 6 to 12 straight, parallel grains across the face with minimal blemishes, whereas Grade 2 may display 5 to 7 grains with minor redwood coloration or small pin knots."
+      }
+    ],
     sections: [
       {
-        title: "The Solitary Hybrid of the River Stour",
+        title: "Why is English Willow (Salix alba caerulea) the Standard Timber for Cricket Bats?",
         paragraphs: [
-          "For more than two centuries, the sweetest sound in sport—the sharp, dry, champagne-cork *clonk* of leather meeting wood—has owed its existence to a single botanical hybrid: Salix alba var. caerulea. Grown almost exclusively along the damp river meadows of Suffolk, Essex, and Hampshire, these cricket bat willows are felled only after fifteen to twenty years of steady, unhurried growth.",
-          "Unlike standard white willow, the caerulea variety combines an astonishingly low specific gravity with fibrous cell resilience. It absorbs the shock of a five-and-a-half-ounce missile arriving at ninety miles per hour, compressing microscopically upon impact and releasing the stored kinetic energy back through the ball with supreme elasticity.",
-          "When the timber arrives at the yard, it is cleft by axe along its natural grain rather than sawn. Sawn wood severs the continuous capillary fibers; cleft willow preserves them intact, ensuring the blade will not fracture down its central spine under the battering of modern fast bowling."
+          "English willow is universally chosen because its botanical cellular matrix provides the highest coefficient of restitution while keeping total blade weight feather-light. For more than two centuries, the sweetest sound in sport—the sharp, dry, champagne-cork clonk of leather meeting wood—has owed its existence to Salix alba var. caerulea grown along the damp river meadows of Suffolk and Essex.",
+          "Unlike standard timber, the caerulea variety combines an astonishingly low specific gravity with fibrous cell resilience. It absorbs the shock of a five-and-a-half-ounce missile arriving at ninety miles per hour, compressing microscopically upon impact and releasing the stored kinetic energy back through the ball with supreme elasticity.",
+          "When the timber arrives at the yard, it is cleft by hand axe along its natural grain rather than sawn. Sawn wood severs the continuous capillary fibers; cleft willow preserves them intact, ensuring the blade will not fracture down its central spine under the battering of modern fast bowling."
         ],
         callout: {
           title: "The 5-Tier Willow Grading Scale",
@@ -90,34 +119,40 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
         }
       },
       {
-        title: "The Cold Steel of the Drawknife and the Mechanical Press",
+        title: "How Does Hydraulic Pressing Create the Rebound Sweet Spot in Willow?",
         paragraphs: [
-          "In the workshop, the cleft meets the drawknife. The podshaver stands over his bench, peeling paper-thin ribbons of fragrant timber with rhythmic strokes. No two clefts possess the exact same moisture balance or weight distribution; thus, computer-numerical milling machines will never replicate the intuitive touch of an artisan whose thumb can feel the rebound density of the sweet spot.",
-          "Before the blade can face a bowler, it must undergo mechanical pressing. Under six hundred to two thousand pounds per square inch of hydraulic pressure, the porous cell walls are consolidated just enough to prevent the surface from denting, yet left supple enough to deliver explosive ping.",
-          "Finally, the handle—twelve pieces of sarawak cane spliced together with thin strips of vulcanized Indian rubber—is wedged into the blade with fish glue. This composite handle behaves like a miniature leaf-spring suspension system, dampening vibration before the batter's hands can register the sting."
+          "Hydraulic pressing consolidates the soft wooden cellular walls under controlled force, hardening the striking face while retaining the blade's spring-like rebound. In the artisan workshop, the cleft meets the podshaver's drawknife before facing between six hundred to two thousand pounds per square inch of hydraulic cylinder pressure.",
+          "If pressed too lightly, the willow faces severe surface denting and cracking on first ball impact; if over-pressed, the wood cells become brittle and deaden the ping. The master craftsman adjusts pressure based on the moisture content and density of each unique willow cleft.",
+          "Finally, a twelve-piece Sarawak cane handle spliced with vulcanized rubber dampeners is wedged into the blade with fish collagen glue, creating a mini leaf-spring suspension that insulates the batter's hands from reverberation."
         ]
       },
       {
-        title: "The Modern Conundrum: Massive Edges vs Featherweight Pick-Up",
+        title: "How Do Modern Batmakers Balance Massive 40mm Edges with Featherweight Pick-Up?",
         paragraphs: [
-          "Thirty years ago, Sir Donald Bradman scored three hundred runs in a single day wielding a blade weighing barely two pounds two ounces, with edges scarcely thicker than ten millimeters. Today, elite players like Rohit Sharma and Ben Stokes walk out with edges exceeding forty millimeters and spine heights reaching sixty-five millimeters, yet balanced to feel no heavier than two pounds nine.",
-          "This aerodynamic marvel is achieved through convex spine profiling and strategic scalloping. The modern master batmaker removes timber from the high shoulders while concentrating mass directly in the middle-to-low hitting zone.",
-          "The result is an instrument that turns defensive edges into boundaries and leaves bowlers looking helplessly at the boundary ropes. Yet the fundamental truth remains unchanged: treat the willow with cold-pressed linseed oil, knock it in with three thousand gentle mallet taps, and it will serve you for a decade of memorable innings."
+          "Modern batmakers achieve lightweight balance with 40mm edges by scalloping concaved profiles along the upper shoulders while concentrating mass strictly into the mid-to-low hitting zone. This redistributes weight towards the rotational center of percussion.",
+          "Thirty years ago, legendary batters wielded two-pound two-ounce blades with edges barely ten millimeters thick. Today's elite batters step out with edges exceeding forty millimeters and spine heights up to sixty-five millimeters, yet calibrated to pick up like two pounds eight ounces.",
+          "The result is a modern cricket weapon that converts mistimed outside edges into boundaries over the slips, while remaining nimble enough for wristy late cuts."
         ]
       }
     ]
   },
   {
     id: "reverse-swing-and-whispering-seam",
+    slug: "reverse-swing-and-whispering-seam",
     title: "Reverse Swing & The Whispering Seam: The Dark Physics of Bowling's Most Lethal Art",
     subtitle: "From Sarfraz Nawaz's dry Gaddafi Stadium experiments to Wasim and Waqar's banana Yorkers: how aerodynamic chaos dismantled conventional wisdom.",
     category: "Bowling & Tactics",
     readTime: "10 min read",
     publishDate: "September 24, 2026",
     issue: "Vol. XII · No. 03",
+    mainKeyword: "reverse swing bowling physics",
+    relatedKeywords: ["aerodynamics of cricket ball", "Wasim Akram reverse swing"],
+    metaTitle: "Reverse Swing Bowling Physics: Aerodynamics & Ball Care",
+    metaDescription: "Master the aerodynamics of reverse swing bowling in cricket. Learn how boundary layer turbulence and ball maintenance create late unplayable swing at 82+ mph.",
+    artworkAlt: "Macro close-up of a red leather cricket ball showing polished shiny hemisphere and scuffed rough seam",
     statBadge: {
-      value: "80+ mph",
-      label: "Critical Velocity for Turbulent Boundary Inversion"
+      value: "82+ mph",
+      label: "Critical Velocity for Boundary Layer Inversion"
     },
     artworkType: "ball",
     author: {
@@ -129,52 +164,68 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "For eighty overs, a bowler relies on the shiny side to cut through air while the rough seam creates conventional drift. But once the ball ages and the air turns warm, the laws of aerodynamics flip on their head.",
     pullQuote: "Conventional swing is polite debate; reverse swing is an assassination in broad daylight.",
     pullQuoteAttribution: "Imran Khan, Lahore 1982",
-    tags: ["Reverse Swing", "Fast Bowling", "Aerodynamics", "Wasim Akram", "Subcontinent"],
+    tags: ["Reverse Swing", "Fast Bowling Physics", "Aerodynamics", "Wasim Akram", "Cricket Tactics"],
+    faqs: [
+      {
+        question: "At what speed does a cricket ball begin to reverse swing?",
+        answer: "Reverse swing typically begins above a critical velocity threshold of 80 to 84 mph (130-135 km/h), where airflow across the scarred hemisphere triggers early boundary layer separation."
+      },
+      {
+        question: "Which side does the cricket ball swing towards during reverse swing?",
+        answer: "During reverse swing, the cricket ball counter-intuitively swings toward the smooth, shiny hemisphere because the boundary layer adheres longer to that side than the hyper-turbulent rough side."
+      }
+    ],
     sections: [
       {
-        title: "The Reversal of the Pressure Differential",
+        title: "What Physical Aerodynamics Cause a Cricket Ball to Reverse Swing?",
         paragraphs: [
-          "When a new cricket ball departs the seam bowler's fingers, conventional swing is governed by boundary layer separation. The seam is cocked at twenty degrees toward fine leg or slips. Air flowing past the smooth hemisphere remains laminar, separating early, while air colliding with the raised seam becomes turbulent, sticking longer to that side. The resultant lateral pressure differential pulls the ball toward the rough side.",
-          "However, when the ball reaches forty overs of wear on abrasive subcontinent outfields, a counter-intuitive phenomenon occurs. The previously 'rough' side becomes scarred with microscopic craters, gouges, and abrasions, while the fielding side buffs the opposing hemisphere with sweat until it gleams like patent leather.",
-          "At speeds exceeding eighty-two miles per hour, the scarred side creates an extremely thick, turbulent boundary layer that separates far earlier than expected. In contrast, the micro-laminar flow over the shiny side remains adhered deeper around the contour. Suddenly, the net pressure pushes the projectile *toward the shiny side*—defying the batter's muscle memory."
+          "Reverse swing is caused by asymmetric boundary layer separation where the rough, pitted hemisphere produces an overly thick turbulent boundary layer that detaches early, forcing the net lateral pressure to push the ball toward the shiny side. This inverts the conventional flight physics that batters expect.",
+          "With a brand new ball, conventional swing pulls the sphere toward the rough side because the seam trips the air into sticky turbulence. However, once the ball reaches forty overs of wear on abrasive subcontinent outfields, the scarred hemisphere becomes covered in microscopic craters and scuffs.",
+          "At delivery speeds exceeding eighty-two miles per hour, air passing over the polished, sweat-buffed side remains laminar and adheres further around the curvature. The resulting pressure imbalance suddenly forces late deviation inside the final four meters of ball flight."
         ],
         callout: {
-          title: "Conventional vs Reverse Swing Matrix",
-          description: "How ball age, release speed, and seam orientation dictate flight deviation.",
+          title: "Conventional vs Reverse Swing Aerodynamic Matrix",
+          description: "How ball age, release velocity, and seam angle govern flight deviation.",
           stats: [
             { label: "New Ball (0-20 overs)", value: "Swings toward the rough side" },
-            { label: "Critical Speed", value: "Conventional: 65-80 mph | Reverse: 82-95 mph" },
-            { label: "Old Ball (45+ overs)", value: "Swings late toward the shiny side" },
-            { label: "Deviation Timing", value: "Occurs within last 4 meters of trajectory" }
+            { label: "Critical Speed Threshold", value: "Conventional: 65-80 mph | Reverse: 82-95 mph" },
+            { label: "Old Ball (40+ overs)", value: "Swings late toward the shiny side" },
+            { label: "Deviation Timing", value: "Occurs within final 3.8 meters before pitch" }
           ]
         }
       },
       {
-        title: "The Pioneers of Lahore and the Searing 1990s",
+        title: "How Did Pakistani Pioneers Like Wasim Akram Master Reverse Swing in the 1990s?",
         paragraphs: [
-          "The origins trace back to Sarfraz Nawaz at Lahore in 1979, who observed how old balls behaved on sun-baked clay pitches. He shared the secret with Imran Khan, who codified the ball-maintenance rituals that transformed Pakistan's pace battery into the most feared force on earth.",
-          "Then arrived Wasim Akram and Waqar Younis in the early 1990s. With their whippy wrist actions and slingy round-arm trajectory, they delivered reverse swing at blistering speeds. To a batsman on a fifth-day pitch, a Waqar inswinging yorker was not merely challenging; it was physiologically impossible to counter.",
-          "The ball would appear destined for fourth stump, only to take an erratic, late dive into the base of leg stump after the batter's front foot had already committed. By the time England's Simon Jones and Andrew Flintoff mastered the discipline during the magical 2005 Ashes, reverse swing had evolved from an Eastern curiosity into cricket's apex weapon."
+          "Pakistani pace legends perfected reverse swing through slingy round-arm wrist actions and meticulous one-sided moisture discipline. Sarfraz Nawaz first decoded the phenomenon on the baked clay of Lahore in 1979 before sharing the art with Imran Khan.",
+          "In the 1990s, Wasim Akram and Waqar Younis terrorized world batting line-ups with their whippy, late-releasing arm actions. Bowling at ninety miles per hour with a forty-five-over-old red ball, their deliveries would start on a comfortable fourth-stump line before executing a violent, late banana curve directly into leg stump.",
+          "By the 2005 Ashes series, England's Simon Jones and Andrew Flintoff proved that reverse swing was not an Eastern mystery, but a universally masterable aerodynamic weapon."
         ]
       },
       {
-        title: "The Art of Legal Maintenance in the Post-Sandpaper Era",
+        title: "How Can Bowlers Legally Maintain the Cricket Ball in the Post-Sandpaper Era?",
         paragraphs: [
-          "Following the seismic scandals in Cape Town, the stewardship of the ball came under microscopic surveillance. Bowlers could no longer use mint lozenges, bottle caps, or foreign grit to accelerate wear.",
-          "Modern bowling attacks like Jasprit Bumrah's India and Pat Cummins' Australia have returned to pure physical craft: dry sweat applied rigorously to one half, while preserving the natural leather grain on the other through cross-seam throws from the deep outfield.",
-          "When executed with pristine integrity, reverse swing remains cricket's most poetic spectacle—a testament to how grit, sweat, and aerodynamic physics can unlock fifth-day stalemates on the flattest pitches known to man."
+          "Modern bowling units maintain the ball legally by rigorously buffing one hemisphere with natural sweat and flannel trousers while keeping the other dry through cross-seam outfield throws. Following the 2018 Cape Town sanctions, foreign abrasives and artificial mints were banned.",
+          "Attacks led by Jasprit Bumrah and Pat Cummins rely purely on athletic discipline. Outfielders are drilled never to bounce the polished side on gritty turf, ensuring a natural aerodynamic disparity between the two halves.",
+          "When executed with pristine integrity, legal reverse swing remains the most thrilling sight in Test cricket—a triumph of fluid dynamics over batsman expectation."
         ]
       }
     ]
   },
   {
     id: "lost-art-of-leg-spin",
+    slug: "lost-art-of-leg-spin",
     title: "The Hypnotic Geometry of Leg-Spin: From Clarrie Grimmett to Shane Warne's Golden Era",
     subtitle: "Why the wrist-spinner's trade is the most psychologically punishing and aesthetically sublime discipline in world sport.",
     category: "Spin Mastery",
     readTime: "11 min read",
     publishDate: "September 18, 2026",
     issue: "Vol. XII · No. 02",
+    mainKeyword: "leg spin bowling technique",
+    relatedKeywords: ["Shane Warne ball of the century", "wrist spin biomechanics"],
+    metaTitle: "Leg Spin Bowling Technique: Wrist Spin Biomechanics",
+    metaDescription: "Learn the biomechanics of leg spin bowling in cricket. Analyze Shane Warne's Ball of the Century, wrist pronation, and the Magnus effect causing late drift.",
+    artworkAlt: "Kinetic diagram of a cricket ball rotating with 3,100 RPM wrist pronation and sharp pitch deviation",
     statBadge: {
       value: "3,100 rpm",
       label: "Average Revolutions on Warne's Leg Break"
@@ -189,52 +240,68 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "No other cricketer lives on such a knife edge between humiliation and transcendence as the wrist-spinner. We examine the biomechanics of the flipper, the psychic toll of full tosses, and the legacy of the King of Spin.",
     pullQuote: "To bowl leg-spin is to sign a contract with catastrophe in exchange for glimpses of pure magic.",
     pullQuoteAttribution: "Richie Benaud, 1978",
-    tags: ["Leg Spin", "Shane Warne", "Spin Bowling", "Biomechanics", "Cricket History"],
+    tags: ["Leg Spin Bowling", "Shane Warne", "Wrist Spin", "Cricket Biomechanics", "Spin Tactics"],
+    faqs: [
+      {
+        question: "How does the Magnus effect work in leg-spin bowling?",
+        answer: "When a leg-spinner imparts top-spin and side-spin at 3,000+ RPM, the forward rotational velocity creates downward Magnus force that causes the ball to dip earlier and sharper than gravitational fall."
+      },
+      {
+        question: "What was the Ball of the Century bowled by Shane Warne?",
+        answer: "On June 4, 1993 at Old Trafford, Shane Warne bowled his first ball in an Ashes Test to Mike Gatting, drifting the ball a foot outside leg stump before it gripped and spun 90 degrees to clip off-bail."
+      }
+    ],
     sections: [
       {
-        title: "The Anatomy of Wrist Pronation",
+        title: "What Biomechanical Hand Mechanics Separate Leg-Spin from Off-Spin?",
         paragraphs: [
-          "Off-spin is an honest, geometric trade: the fingers roll over the seam, relying on drift and repeatable angles. Leg-spin, however, is an unnatural contortion. To impart three thousand revolutions per minute from right to left requires the third finger to cock behind the seam while the wrist uncoils in a violent, anti-clockwise whip at the instant of release.",
-          "If the bowler misses their release point by three millimeters, the delivery turns into a chest-high full toss or a rank long hop destined for the mid-wicket boundary. There is no middle ground for the leg-spinner; you are either a sorcerer or an embarrassment.",
-          "Yet when the axis of rotation tilts fifty degrees forward, the Magnus effect drags the red ball downwards faster than gravity alone would dictate. The batsman perceives the ball to be pitched at the driving length, steps forward with certainty, and is frozen as the ball dips, grips the dry turf, and explodes across his off-stump."
+          "Leg-spin relies on explosive wrist pronation and third-finger uncoiling rather than finger index roll. While off-spin is a repeatable geometric hinge, leg-spin requires the bowler's third finger to cock behind the seam while the entire forearm snaps anti-clockwise at release.",
+          "A release error of just three millimeters produces a gentle full toss or a rank short ball punished for six. Yet when executed with pristine kinetic timing, the delivery imparts more than three thousand revolutions per minute onto the seam.",
+          "This high rotational energy activates the Magnus effect, pulling the red ball downwards through the air faster than gravity alone. The batsman misjudges the trajectory, steps forward confidently, and finds the ball biting the turf and turning sharply past off stump."
         ],
         callout: {
           title: "The Leg-Spinner's Arsenal of Deception",
-          description: "The six foundational deliveries mastered by the immortals:",
+          description: "The six foundational deliveries mastered by cricket's wrist-spin immortals:",
           stats: [
-            { label: "The Leg Break", value: "Turns sharp from leg to off; supreme drift" },
-            { label: "The Googly (Bosie)", value: "Released out the back of the hand; turns into RHB" },
-            { label: "The Topspinner", value: "Magnus downforce; bites and bounds high" },
-            { label: "The Flipper (Grimmett)", value: "Squeezed between thumb and fingers; skids low" }
+            { label: "The Leg Break", value: "Turns sharp leg to off with dramatic aerodynamic drift" },
+            { label: "The Googly (Bosie)", value: "Released out the back of the hand; turns into the right-hander" },
+            { label: "The Topspinner", value: "Generates Magnus downforce; bounces steeply off length" },
+            { label: "The Flipper (Grimmett)", value: "Squeezed between thumb and fingers; skids low with backspin" }
           ]
         }
       },
       {
-        title: "June 4, 1993: The Ball of the Century",
+        title: "How Did Shane Warne Produce the Legendary 'Ball of the Century' in 1993?",
         paragraphs: [
-          "At Old Trafford during the 1993 Ashes, Shane Warne ambled in off eight casual paces for his maiden delivery on English soil. Mike Gatting, arguably the premier player of spin in Britain, took his guard with placid confidence.",
-          "Warne flicked his wrist. The ball drifted through the Manchester drizzle like an errant leaf, pitching a foot outside Gatting's leg stump. Gatting thrust his left pad forward, perfectly content to let the ball die in the rough.",
-          "What happened next rewrote cricket history. The ball gripped, hissed, and turned ninety degrees across Gatting's defensive blade, clipping the absolute peak of the off-bail. Gatting stood stock-still for ten seconds, peering down at the woodwork in bewildered disbelief before walking off. In a solitary fraction of a second, Warne had resurrected an endangered art form."
+          "Shane Warne produced the 1993 Ball of the Century by combining heavy shoulder rotation with supreme seam angle drift into the Manchester wind. Stepping up for his maiden Ashes delivery at Old Trafford, Warne bowled to Mike Gatting, England's finest player of spin.",
+          "The delivery drifted across Gatting's eyeline, pitching twelve inches outside leg stump on an apparently harmless trajectory. Gatting pushed his front pad out to pad away the ball with serene confidence.",
+          "Suddenly, the seam bit into the pitch, fizzed with three thousand RPMs of energy, and turned ninety degrees across Gatting's blade to clip the top of off bail. Gatting stood frozen in disbelief as Warne permanently resurrected leg-spin into world prominence."
         ]
       },
       {
-        title: "The Modern Leg-Spinner in the White-Ball Cauldron",
+        title: "Why Has Wrist-Spin Become the Primary Wicket-Taking Weapon in Modern T20?",
         paragraphs: [
-          "In the age of twenty-over spectacles, many predicted wrist-spin would be pulverized out of existence. Instead, the opposite occurred. In an era where finger spinners are routinely milked for easy singles, leg-spinners like Rashid Khan, Adam Zampa, and Kuldeep Yadav have become the primary wicket-takers in international cricket.",
-          "Their weapon is not merely big turn, but speed through the air. Rashid bowls his googlies at ninety-five kilometers per hour—leaving batters zero reaction time to read the seam from the pitch.",
-          "Even as boundaries shrink and bats balloon, the wrist-spinner remains the romantic center of the game: the smiling gambler willing to be hit for six if it buys them one more delivery to weave their web."
+          "Wrist-spin dominates modern white-ball cricket because its trajectory turns both ways independently of pitch surface while arriving at high release velocity. While orthodox finger spinners are easily milked for singles, wrist-spinners attack the stumps directly.",
+          "Modern practitioners like Rashid Khan, Adam Zampa, and Kuldeep Yadav deliver their googlies at ninety-five kilometers per hour. Batters have fewer than three hundred milliseconds to read the bowler's fingers, making sweep shots perilous.",
+          "Even with flatter pitches and short boundary ropes, the wrist-spinner remains cricket's ultimate match-winner."
         ]
       }
     ]
   },
   {
     id: "eden-gardens-2001-partnership",
+    slug: "eden-gardens-2001-partnership",
     title: "Eden Gardens 2001: The Sweltering Kolkata Miracle that Defied Infinity",
     subtitle: "Follow-on enforced, 274 runs adrift, facing Australia's 16-match juggernaut: how VVS Laxman and Rahul Dravid batted an entire day without parting.",
     category: "Historic Epics",
     readTime: "12 min read",
     publishDate: "September 12, 2026",
     issue: "Vol. XII · No. 01",
+    mainKeyword: "Eden Gardens 2001 Test match",
+    relatedKeywords: ["VVS Laxman 281", "Rahul Dravid partnership Kolkata"],
+    metaTitle: "Eden Gardens 2001: Laxman & Dravid Kolkata Epic",
+    metaDescription: "Relive India's miraculous comeback at Eden Gardens in 2001. Analyze VVS Laxman's 281, Rahul Dravid's 180, and the Day 4 unbroken partnership against Australia.",
+    artworkAlt: "Scoreboard illustration of Eden Gardens 2001 showing VVS Laxman 281 and Rahul Dravid 180",
     statBadge: {
       value: "335 Runs",
       label: "Day 4 Unbroken Partnership (90 Overs)"
@@ -249,52 +316,67 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "Steve Waugh called it the 'Final Frontier'. Australia arrived in India on a record-shattering 16-match Test winning streak. What unfolded across five days at Eden Gardens turned the sport on its axis forever.",
     pullQuote: "If you want to know what courage looks like, look at Dravid's helmet grill soaked in sweat at tea on Day 4, pointing his bat toward the Australian dressing room.",
     pullQuoteAttribution: "Harsha Bhogle, Eden Gardens 2001",
-    tags: ["Eden Gardens", "VVS Laxman", "Rahul Dravid", "Steve Waugh", "Test Classics"],
+    tags: ["Eden Gardens 2001", "VVS Laxman 281", "Rahul Dravid", "Test Cricket History", "India vs Australia"],
+    faqs: [
+      {
+        question: "How many runs did Laxman and Dravid score on Day 4 in Kolkata?",
+        answer: "On Day 4 of the 2001 Eden Gardens Test, VVS Laxman and Rahul Dravid batted through all 90 overs without losing a wicket, scoring 335 runs in an unprecedented display of endurance."
+      },
+      {
+        question: "How many teams had won a Test after following on before Eden Gardens 2001?",
+        answer: "Only two teams in the entire history of Test cricket had ever won a match after following on prior to India's victory: England in 1894 and England in 1981."
+      }
+    ],
     sections: [
       {
-        title: "The Follow-On and the Despair of Day 3",
+        title: "Why Was India Facing Inevitable Defeat Following Steve Waugh's Follow-On?",
         paragraphs: [
-          "By the morning of Day 3, the Test match appeared to be following the prescribed Australian script. Steve Waugh's invincible side had posted 445, powered by Matthew Hayden's sweeping masterclass, before skittling India for a feeble 171. Sourav Ganguly was made to follow on, 274 runs behind.",
-          "Eden Gardens sat under a thick, stifling haze of March humidity. The crowd, normally eighty thousand voices of deafening roar, was reduced to a numbed murmur. No team had won a Test match after following on since Ian Botham's Ashes heist at Headingley in 1981.",
-          "When Sachin Tendulkar was trapped leg-before by Jason Gillespie late on Day 3 for just ten runs, the obituary of Indian cricket seemed written. But at number three walked VVS Laxman, whose sore back had forced him to drop down the order in the first innings, and joining him at number six was Rahul Dravid, fighting through cramps and public scrutiny."
+          "India faced near-certain defeat because Australia held a 274-run first-innings lead and entered the match on an unprecedented 16-match Test winning streak. Steve Waugh's side had posted 445 runs and bowled India out for 171 on Day 3.",
+          "Under the sweltering heat of Kolkata, eighty thousand spectators sat in stunned silence. When Sachin Tendulkar fell for ten runs in the second innings, the contest appeared entirely over.",
+          "However, Indian captain Sourav Ganguly promoted VVS Laxman to number three, pairing him alongside Rahul Dravid at number six to mount the most resilient counter-attack in cricket history."
         ],
         callout: {
           title: "Day 4 by the Numbers: The Impossibility",
-          description: "The complete statistical breakdown of the historic fourth day in Kolkata:",
+          description: "The complete statistical record of the unbroken Kolkata fourth day:",
           stats: [
             { label: "Overs Bowled", value: "90 full overs" },
-            { label: "Wickets Lost", value: "Zero (0)" },
-            { label: "Runs Scored", value: "335 runs in a single day" },
-            { label: "Laxman Final", value: "281 off 452 balls (44 boundaries)" }
+            { label: "Wickets Conceded", value: "Zero (0)" },
+            { label: "Day 4 Runs Added", value: "335 runs in a single day" },
+            { label: "Laxman Final Score", value: "281 off 452 balls (44 boundaries)" }
           ]
         }
       },
       {
-        title: "The Day Without a Wicket: 90 Overs of Transcendent Grace",
+        title: "How Did VVS Laxman and Rahul Dravid Bat an Entire Day Without Losing a Wicket?",
         paragraphs: [
-          "What followed on March 14, 2001, is etched into the collective folklore of world sport. For six continuous hours under a relentless sun, Steve Waugh threw everything in Australia's formidable arsenal at the pair: Glenn McGrath's metronomic off-stump probing, Gillespie's reverse swinging bouncers, and Shane Warne's leg-spin firing into the footmarks outside leg stump.",
-          "Laxman answered with batting from another astral plane. He repeatedly walked across his stumps to meet Warne's sharpest spinning deliveries, flicking them against the turn through mid-wicket with rubberized Hyderabadi wrists. Any ball pitched short was punched with imperious ease through extra cover.",
-          "At the other end stood Dravid—'The Wall' incarnate. Relentless, immovable, and fiercely focused. Every forward defense was celebrated by sixty thousand roaring fans as though it were a six. When Dravid reached his century, he raised his bat and pointed it toward the media press box in an uncharacteristically fierce assertion of his worth."
+          "Laxman and Dravid batted through all ninety overs on Day 4 by countering Shane Warne's rough-spinning deliveries with supple wristwork and impenetrable forward defense. Laxman repeatedly stepped across his crease to flick Warne against the turn through mid-wicket.",
+          "At the other end, Dravid played the role of 'The Wall', exhausting McGrath and Gillespie with unyielding concentration. For six consecutive hours, the pair gave no chances to Australia's formidable field.",
+          "By stumps on Day 4, India had moved from deficit to dominance, setting the stage for an extraordinary final day."
         ]
       },
       {
-        title: "The Dominoes Fall: Harbhajan's Day 5 Climax",
+        title: "How Did Harbhajan Singh Climax the Fifth Day to Dismantle Australia's 16-Match Streak?",
         paragraphs: [
-          "Having batted through the entire fourth day without losing a single wicket, India declared on Day 5, setting Australia a target of 384 in sixty-eight overs. What started as an improbable survival transformed into a carnivorous pursuit.",
-          "A nineteen-year-old Harbhajan Singh, who had already claimed India's first-ever Test hat-trick on Day 1, tore through the Australian middle order. When Glenn McGrath was trapped plumb in front with just minutes left on the clock, Eden Gardens erupted into an earthquake of noise.",
-          "Australia's golden run was severed. More importantly, Indian cricket found an unshakeable belief that would carry them to the summit of the Test rankings over the subsequent two decades."
+          "Nineteen-year-old off-spinner Harbhajan Singh dismantled Australia's middle order on Day 5, taking six wickets to finish with thirteen in the match, including India's first-ever Test hat-trick. Australia was bowled out with just fifteen balls remaining.",
+          "India won by 171 runs, becoming only the third team in history to win after following on. The victory shattered Australia's streak and permanently instilled a culture of self-belief in modern Indian cricket."
         ]
       }
     ]
   },
   {
     id: "death-of-90-over-day-rise-of-blitz",
+    slug: "death-of-90-over-day-rise-of-blitz",
     title: "The Death of the 90-Over Day and the Biomechanics of the Franchise Blitz",
     subtitle: "How 20-over cricket dismantled century-old rhythms, invented new bat speeds, and reconstructed the modern athlete.",
     category: "The Modern Era",
     readTime: "9 min read",
     publishDate: "September 6, 2026",
     issue: "Vol. XI · No. 06",
+    mainKeyword: "T20 cricket batting biomechanics",
+    relatedKeywords: ["cricket power hitting techniques", "franchise cricket evolution"],
+    metaTitle: "T20 Cricket Biomechanics: Power Hitting & Tactics",
+    metaDescription: "Explore how T20 franchise cricket transformed batting biomechanics, power hitting launch angles, ground reaction forces, and death bowling deceptions.",
+    artworkAlt: "Launch angle trajectory and radar telemetry illustration of modern T20 power hitting",
     statBadge: {
       value: "142 km/h",
       label: "Average T20 Bat-Speed in Modern Range Hitting"
@@ -309,50 +391,56 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "Cricket was conceived as an agrarian pastoral pastime governed by daylight, tea breaks, and patient attrition. T20 reduced that temporal canvas into a three-hour pressure-cooker of kinetic maximization.",
     pullQuote: "We used to coach batsmen to let the ball come to them; now we teach them to treat every delivery as an explosion waiting for an ignition trigger.",
     pullQuoteAttribution: "Julian Wood, Power Hitting Specialist",
-    tags: ["T20", "Franchise Cricket", "Biomechanics", "Power Hitting", "Analytics"],
-    sections: [
+    tags: ["T20 Cricket", "Power Hitting", "Batting Biomechanics", "Cricket Analytics", "Modern Tactics"],
+    faqs: [
       {
-        title: "From Defense to Launch Angles: The Baseball Colonization",
-        paragraphs: [
-          "For a century and a half, cricket batting coaching was dogmatic: high elbow, head over the ball, play along the ground, avoid the air. A batter who lifted his head or dragged his back leg was deemed uncouth and technically deficient.",
-          "The advent of the Indian Premier League and global franchise circuits dismantled this orthodoxy overnight. Power-hitting coaches like Julian Wood borrowed kinetic sequence drills from Major League Baseball, introducing concepts of ground-reaction force, hip-to-shoulder separation, and launch angles.",
-          "Today's power hitters do not merely block; their front foot clears itself to open the hip axis, allowing the bat head to swing through an arc exceeding one hundred and forty kilometers per hour. The scoop, the ramp, the switch-hit, and the helicopter shot are no longer gimmicks—they are mathematically optimized responses to field restrictions."
-        ],
-        callout: {
-          title: "The Shift in Kinetic Variables",
-          description: "Comparing traditional Test match fundamentals with T20 franchise protocols:",
-          stats: [
-            { label: "Impact Target", value: "Test: Grounded front-v | T20: 25°-35° Launch Arc" },
-            { label: "Stance Width", value: "Test: Shoulder width | T20: Wide base, lowered CoG" },
-            { label: "Decision Window", value: "Test: 450ms | T20: Sub-320ms commit" },
-            { label: "Match Ball Turnover", value: "Test: 80 overs | T20: Two white balls, 10 overs each" }
-          ]
-        }
+        question: "What is the optimal launch angle for boundary power hitting in T20?",
+        answer: "Biomechanics research shows that the optimal launch angle for six-hitting in cricket falls between 25° and 35°, maximizing aerial carry while clearing boundary fielders."
       },
       {
-        title: "The Bowling Renaissance: Slower Ball Bouncers and Knuckleballs",
+        question: "How do ground reaction forces affect cricket bat speed?",
+        answer: "By planting a wider base and driving through the lead foot, batters create kinetic ground-reaction torque that transfers through the hips to accelerate bat head speeds beyond 140 km/h."
+      }
+    ],
+    sections: [
+      {
+        title: "How Has Modern T20 Franchise Batting Borrowed Launch Angles from Baseball?",
         paragraphs: [
-          "Far from extinguishing bowlers, the franchise blitz spurred an unprecedented tactical renaissance. Bowlers who relied purely on swing or seam were quickly exposed; survival required a bag of disguised deceptions.",
-          "The modern death bowler executes the back-of-the-hand slower ball, the knuckleball, the wide yorker on the tramline, and the sharp bouncer aimed at the batter's armpit. Bowlers like Jasprit Bumrah and Lasith Malinga transformed yorkers into sniper bullets released from unorthodox, low-sling trajectory points that rob batters of visual pick-up time."
+          "T20 batting borrowed rotational kinetic mechanics from baseball by training batters to optimize ground-reaction forces, hip-to-shoulder separation, and launch angles between twenty-five and thirty-five degrees. Traditional batting dogma insisted on keeping the ball grounded along the carpet.",
+          "With the rise of the IPL and global franchise leagues, power-hitting coaches revolutionized batting drills. Players now clear their front leg to unlock hip rotation, allowing the bat head to accelerate through arcs surpassing 140 km/h.",
+          "Shots like the ramp, scoop, and switch-hit are no longer unorthodox risks, but statistically sound responses to preset boundary field restrictions."
         ]
       },
       {
-        title: "The Soul of the Game: Coexistence or Cannibalization?",
+        title: "What Deceptive Variations Have Fast Bowlers Invented to Counter Range Hitting?",
         paragraphs: [
-          "As private equity capital flows into multi-club ownership models across Mumbai, London, Texas, and Johannesburg, the traditional five-day Test match finds itself defending its calendar territory.",
-          "Yet the greatest modern players—from Virat Kohli and Steve Smith to Kane Williamson—continue to insist that Test cricket remains the apex test of human spirit. The challenge of our era is not choosing between the two, but celebrating how the visceral energy of twenty overs feeds back into the enduring cathedral of the five-day game."
+          "Fast bowlers developed deceptive knuckleballs, wide yorkers, and back-of-the-hand slower deliveries to disrupt the batter's kinetic timing. Bowlers who rely solely on orthodox pace are easily countered by modern power hitters.",
+          "Death-overs specialists like Jasprit Bumrah utilize low-sling release points and pinpoint yorkers within three inches of the crease tramlines, starving batters of leverage."
+        ]
+      },
+      {
+        title: "Can Traditional 90-Over Test Cricket Coexist Alongside the Franchise Blitz?",
+        paragraphs: [
+          "Test cricket and T20 leagues coexist through mutual technical cross-pollination. T20 athleticism has made Test match run rates faster and fielding sharper, while elite batters still measure their ultimate legacy in five-day Test triumphs.",
+          "Rather than extinguishing the longer format, franchise cricket has provided financial vitality and physical conditioning that elevate modern sport."
         ]
       }
     ]
   },
   {
     id: "lords-long-room-and-cathedrals",
+    slug: "lords-long-room-and-cathedrals",
     title: "Inside the Lord's Long Room: The Architectural Reverence of St John's Wood",
     subtitle: "Oil paintings of WG Grace, Victorian wrought iron, and the most hallowed ninety seconds in world sports.",
     category: "Sacred Grounds",
     readTime: "7 min read",
     publishDate: "August 30, 2026",
     issue: "Vol. XI · No. 05",
+    mainKeyword: "Lords Cricket Ground history",
+    relatedKeywords: ["Lords Pavilion Long Room", "MCC cricket heritage"],
+    metaTitle: "Inside the Lord's Long Room: Architectural Heritage Guide",
+    metaDescription: "Tour the historic Long Room at Lord's Cricket Ground. Discover Victorian Pavilion architecture, the 8-foot outfield slope, and Father Time traditions.",
+    artworkAlt: "Victorian brick facade and clock tower of the iconic Lord's Cricket Ground pavilion",
     statBadge: {
       value: "1890",
       label: "Year the Current Lord's Pavilion Opened"
@@ -367,33 +455,43 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "There is no walk in sport quite like descending the narrow wooden steps of the Lord's Pavilion, navigating through the packed rows of Marylebone Cricket Club members, and stepping onto the hallowed turf.",
     pullQuote: "Walking through the Long Room is like walking through a living museum where the portraits on the wall seem to judge your backlift before you face your first ball.",
     pullQuoteAttribution: "Sir Viv Richards",
-    tags: ["Lords", "Pavilion", "MCC", "Cricket Heritage", "London"],
+    tags: ["Lords Cricket Ground", "Long Room", "MCC", "Cricket Heritage", "Pavilion Architecture"],
+    faqs: [
+      {
+        question: "What is the famous slope at Lord's Cricket Ground?",
+        answer: "Lord's has an 8-foot (2.5 meter) slope running from north to south across the playing surface, which significantly influences ball trajectory and bowler angles."
+      }
+    ],
     sections: [
       {
-        title: "The Corridor of History",
+        title: "What Makes the Lord's Long Room Cricket's Most Revered Architectural Corridor?",
         paragraphs: [
-          "Nestled in the leafy quiet of St John's Wood in North London, the Lord's cricket ground has stood as the spiritual headquarters of the sport since Thomas Lord rolled his first pitch here in 1814.",
-          "At the center of its majesty sits the Grade II* listed Victorian Pavilion, completed in 1890 to the designs of architect Thomas Verity. Within its heart lies the Long Room—a temple of dark polished oak, brass fittings, and walls lined with the finest collection of cricket art in the world.",
-          "Here, oil portraits of William Gilbert Grace, Lord Harris, and Prince Ranjitsinhji gaze down with austere authority. On a Test match morning, several hundred MCC members in egg-and-bacon striped ties gather shoulder to shoulder to form an intimate guard of honour for departing batters."
+          "The Lord's Long Room is cricket's most revered architectural interior because every departing batter must walk directly past rows of Marylebone Cricket Club members and centuries of historic oil portraits. Completed in 1890 to the design of Thomas Verity, the room is paneled in English oak.",
+          "Portraits of W.G. Grace and Prince Ranjitsinhji hang along its walls, creating an intense atmosphere of living history for players walking out to face eighty-thousand fans."
         ]
       },
       {
-        title: "The 8-Foot Slope and the Ghost of Father Time",
+        title: "How Does the Famous 8-Foot Lord's Outfield Slope Alter Bowling Trajectories?",
         paragraphs: [
-          "Lord's is not merely historic; it is idiosyncratic. Across the width of the playing surface runs a notorious eight-foot slope (2.5 meters from north to south). For visiting bowlers, this topographic anomaly can prove disorienting: bowling from the Pavilion End drives the ball in with the slope, while bowling from the Nursery End drags it relentlessly down the hill toward the batsman's pads.",
-          "High atop the weather vane behind the Mound Stand sits 'Father Time'—a wrought-iron figure representing the mythic grim reaper, bending over the wickets with a scythe, reminding players and spectators alike that while empires rise and crumble, the timeless contest between bat and ball continues unabated."
+          "The eight-foot topographic slope from north to south pulls seamers' deliveries down the hill into right-handers when bowling from the Nursery End, while drifting balls away from the Pavilion End. Bowlers who master the slope gain a distinct natural advantage in English conditions."
         ]
       }
     ]
   },
   {
     id: "anatomy-of-the-cover-drive",
+    slug: "anatomy-of-the-cover-drive",
     title: "The Anatomy of a Flawless Cover Drive: Where Biomechanics Meets Ballet",
     subtitle: "Dissecting the head position, high leading elbow, and weight transfer behind cricket's most photogenic stroke.",
     category: "Batting Technique",
     readTime: "8 min read",
     publishDate: "August 21, 2026",
     issue: "Vol. XI · No. 04",
+    mainKeyword: "cricket cover drive technique",
+    relatedKeywords: ["batting biomechanics cover drive", "Virat Kohli cover drive analysis"],
+    metaTitle: "Cricket Cover Drive Technique: Head, Foot & Elbow Guide",
+    metaDescription: "Master the cricket cover drive with biomechanical analysis of head alignment, the 45-degree high elbow, and weight transfer seen in Virat Kohli's masterclass.",
+    artworkAlt: "Biomechanical line diagram illustrating 45-degree high leading elbow and head alignment during cover drive",
     statBadge: {
       value: "45°",
       label: "Optimal Leading Elbow Elevation at Impact"
@@ -408,42 +506,43 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "No stroke in world sport unites violent kinetic transfer and effortless aesthetic grace quite like the cover drive. From David Gower's lazy velvet to Virat Kohli's snapping crunch.",
     pullQuote: "You don't hit a cover drive with your hands; you caress it with your nose directly over the seam.",
     pullQuoteAttribution: "David Gower, Lord's 1985",
-    tags: ["Cover Drive", "Virat Kohli", "Batting Technique", "Kumar Sangakkara", "Masterclass"],
+    tags: ["Cover Drive", "Batting Technique", "Virat Kohli", "Biomechanics", "Cricket Coaching"],
+    faqs: [
+      {
+        question: "Where should your head be when executing a cover drive?",
+        answer: "The batter's head must be positioned directly over the bouncing ball at the point of impact, ensuring shoulders remain aligned along the target line."
+      }
+    ],
     sections: [
       {
-        title: "The Trinity of Balance: Head, Foot, and Elbow",
+        title: "What Head, Foot, and Elbow Biomechanics Produce the Perfect Cover Drive?",
         paragraphs: [
-          "The cover drive is cricket's high-wire act. Play it a fraction too early and the outside edge flies to third slip; play it with your head back and the ball loops gently to point. It requires an exact synchronization of three independent anatomical anchors.",
-          "First is the head. At the point of impact, the batter's eyes must be positioned directly over the bouncing ball. If the head tilts, the shoulders open prematurely, altering the swing plane. Second is the front foot—not stepped flatly across, but planted heel-first beside the line of the delivery, with the toe pointing directly toward the extra-cover boundary.",
-          "Third is the exalted high elbow. The leading arm (left arm for right-handers) must act as the primary steering rudder, elevated at forty-five degrees, while the bottom hand remains feather-light on the rubber grip. It is the top hand that controls the trajectory along the turf; the bottom hand provides only late throttle."
-        ],
-        callout: {
-          title: "The Three Archetypes of the Drive",
-          description: "How three legendary masters executed the shot with contrasting stylistic signatures:",
-          stats: [
-            { label: "Virat Kohli", value: "Explosive wrist snap, bottom-hand crunch into turf" },
-            { label: "Kumar Sangakkara", value: "High elbow poise, regal stillness, immaculate timing" },
-            { label: "David Gower", value: "Featherlight lazy extension, nonchalant follow-through" }
-          ]
-        }
+          "The perfect cover drive requires synchronizing three anatomical anchors: head position directly over the point of bounce, a lead foot planted heel-first beside the line, and a lead elbow elevated at forty-five degrees. This ensures top-hand control along the ground.",
+          "If the head hangs back, the shot goes aerially to cover; if the bottom hand dominates, the blade slices toward slip cordon. Timing and balance produce the purest acceleration."
+        ]
       },
       {
-        title: "The Sensory Reward of the Sweet Spot",
+        title: "What Sensory Feedback Distinguishes True Sweet Spot Impact from Mistimed Edges?",
         paragraphs: [
-          "When all parameters align—when the red ball meets the dead center of seasoned English willow on the up—there is no sensation of impact. No vibration travels up the forearms. The ball simply accelerates across the green grass as if drawn by a magnet toward the boundary fence.",
-          "In that single stroke, cricket justifies its hundred-year literature. It is kinetic violence disguised as high art."
+          "When struck at the exact center of percussion, zero shockwave vibration travels up the batter's forearm. The ball accelerates along the turf with unmatched speed, delivering pure auditory and physical feedback."
         ]
       }
     ]
   },
   {
     id: "ashes-144-years-of-urns-and-animosity",
+    slug: "ashes-144-years-of-urns-and-animosity",
     title: "The Ashes: 144 Years of Urns, Animosity, and Timeless Theatre",
     subtitle: "How an obituary for English cricket in the Sporting Times birthed sport's most fiercely contested bilateral civil war.",
     category: "Rivalry & Lore",
     readTime: "10 min read",
     publishDate: "August 14, 2026",
     issue: "Vol. XI · No. 03",
+    mainKeyword: "The Ashes cricket history",
+    relatedKeywords: ["Ashes urn origin", "England vs Australia rivalry"],
+    metaTitle: "The Ashes Cricket History: 144 Years of Urns & Rivalry",
+    metaDescription: "Explore the origin and drama of The Ashes. From the 1882 mock obituary to Botham in '81 and Headingley 2019, discover cricket's oldest bilateral contest.",
+    artworkAlt: "Terracotta Ashes urn silhouette with 1882 commemoration wreath and crossed wickets",
     statBadge: {
       value: "10.5 cm",
       label: "Height of the Fragile Terracotta Ashes Urn"
@@ -458,36 +557,43 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "The prize is a four-inch terracotta urn containing the charred remains of a wooden cricket bail, permanently housed in the Lord's museum. Yet grown men weep and fracture bones in its pursuit.",
     pullQuote: "Bodyline, Botham in '81, Warne's ball of the century, Edgbaston 2005, Stokes at Headingley 2019: The Ashes is not a tournament; it is our national mythology.",
     pullQuoteAttribution: "Gideon Haigh, Renowned Cricket Author",
-    tags: ["The Ashes", "England vs Australia", "Botham", "Ben Stokes", "Bodyline"],
+    tags: ["The Ashes", "England vs Australia", "Cricket Lore", "Ben Stokes 2019", "Edgbaston 2005"],
+    faqs: [
+      {
+        question: "What is inside the real Ashes urn?",
+        answer: "The terracotta Ashes urn contains the ashes of a wooden cricket bail burned during the 1882-83 English tour of Australia and presented to Ivo Bligh."
+      }
+    ],
     sections: [
       {
-        title: "The Death Notice at The Oval: 1882",
+        title: "How Did a Mock 1882 Newspaper Death Notice Create The Ashes Urn Myth?",
         paragraphs: [
-          "On August 29, 1882, the unthinkable occurred on the sodden turf of The Oval in South London. An Australian touring side, captained by WL Murdoch, defeated England on English soil for the very first time, bowling the hosts out for just seventy-seven runs as Fred 'The Demon' Spofforth claimed fourteen wickets.",
-          "The British sporting public was seized by collective grief. Three days later, *The Sporting Times* printed a satirical mock obituary bordered in thick mourning black:",
-          "\"In Affectionate Remembrance of English Cricket, which died at the Oval... The body will be cremated and the ashes taken to Australia.\"",
-          "A few weeks later, the Hon. Ivo Bligh captained an English team to Australia with a solemn vow: to recover those mythical ashes. At Rupertswood estate in Sunbury, Victoria, Florence Morphy and friends presented Bligh with a tiny terracotta perfume jar containing the ashes of a cricket bail. The myth was christened."
+          "The Ashes myth began on August 29, 1882, when Australia defeated England on English turf for the first time, prompting The Sporting Times to print a satirical death notice declaring English cricket cremated and its ashes taken to Australia.",
+          "When Ivo Bligh captained the subsequent tour to Australia, Victorian women presented him with a tiny terracotta perfume jar containing charred bails to commemorate winning back the ashes."
         ]
       },
       {
-        title: "The Crucible of Edgbaston 2005 and Headingley 2019",
+        title: "What Dramatic Test Finishes Define the Modern Intensity of England vs Australia?",
         paragraphs: [
-          "What makes the Ashes transcendent is its unmatched capacity for nerve-shredding theatrical climaxes.",
-          "In August 2005 at Edgbaston, after four days of ferocious combat, Australia's tail-enders Brett Lee and Michael Kasprowicz dragged their side to within two runs of an unthinkable victory. When Steve Harmison forced Kasprowicz to gloat a catch behind, England won by two runs—the narrowest margin in Ashes history.",
-          "Andrew Flintoff, instead of wildly joining his teammates in manic jubilation, knelt down beside a weeping Brett Lee, placing a hand on his shoulder in a moment that encapsulated the fierce sportsmanship underpinning this rivalry.",
-          "Fourteen years later at Headingley in 2019, Ben Stokes walked out with England needing seventy-three runs with only number-eleven Jack Leach for company. Feeding off potato crisps and sheer willpower, Stokes reverse-swept Nathan Lyon, smashed Pat Cummins onto the rugby ground roof, and secured an immortal one-wicket victory."
+          "The Ashes is defined by climaxes like England's two-run victory at Edgbaston in 2005 and Ben Stokes' one-wicket heist at Headingley in 2019. The intense psychological rivalry ensures no deficit is considered safe."
         ]
       }
     ]
   },
   {
     id: "the-unsung-guardians-subcontinent-keeping",
+    slug: "the-unsung-guardians-subcontinent-keeping",
     title: "The Unsung Guardians: Test Match Wicketkeeping on Day 5 Subcontinent Dustbowls",
     subtitle: "Crouching through 150 overs in 40°C heat, reading spin off the rough, and the razor-thin margin between bye and stumping.",
     category: "Wicketkeeping",
     readTime: "8 min read",
     publishDate: "August 5, 2026",
     issue: "Vol. XI · No. 02",
+    mainKeyword: "cricket wicketkeeping techniques",
+    relatedKeywords: ["subcontinent wicketkeeping", "MS Dhoni stumping speed"],
+    metaTitle: "Cricket Wicketkeeping Techniques: Dustbowls & Dhoni",
+    metaDescription: "Analyze wicketkeeping on Day 5 subcontinent dustbowls. Discover soft hands technique, physical stamina, and MS Dhoni's 0.08-second stumping biomechanics.",
+    artworkAlt: "Wicketkeeper gloves taking turning ball behind timber stumps on dusty pitch",
     statBadge: {
       value: "600+",
       label: "Deep Squat Repetitions Per Test Match Day"
@@ -502,44 +608,43 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "The wicketkeeper is the only player on the field who cannot afford a single second of mental drift across five days. We go inside the gloves of the masters who crouch amid the dust and heat.",
     pullQuote: "A batsman makes one mistake and his innings is over; a wicketkeeper makes one mistake and he has twenty thousand people reminding him for five days.",
     pullQuoteAttribution: "Wriddhiman Saha, Master Gloveman",
-    tags: ["Wicketkeeping", "MS Dhoni", "Subcontinent", "Dustbowl", "Mastery"],
+    tags: ["Wicketkeeping", "MS Dhoni", "Subcontinent Cricket", "Test Match Endurance", "Fielding"],
+    faqs: [
+      {
+        question: "How fast was MS Dhoni's fastest stumping recorded?",
+        answer: "MS Dhoni's fastest recorded stumping took just 0.08 seconds from ball entry into gloves to bails being broken, faster than the average human eye blink."
+      }
+    ],
     sections: [
       {
-        title: "The Crucible of the Turning Ball",
+        title: "What Makes Keeping Wicket on Day 5 Subcontinent Dustbowls So Punishing?",
         paragraphs: [
-          "Standing back to eighty-five-mile-an-hour pace bowling is a matter of reflexes and athletic reach. Standing up to world-class spin on a crumbling, fractured fifth-day wicket in Ahmedabad, Galle, or Rawalpindi is an exercise in pure psychic endurance.",
-          "The pitch is cracked like dried mosaic tiles. One ball bites the edge of a fissure and bounds toward the keeper's chin; the very next skids along the turf at ankle height. The wicketkeeper must stay down in their crouch until the ball has pitched, resisting the instinct to rise with the batter's backlift.",
-          "Soft hands are the golden doctrine. If the keeper's fingers are tense upon receiving the ball, the leather rebounds off the palms like a billiard ball. The hands must give way with the trajectory, creating a cushioned pocket in the split second before whipping the bails off."
-        ],
-        callout: {
-          title: "The Physical Toll of Keeping",
-          description: "Biometric load measurements recorded during a grueling five-day Test in Chennai:",
-          stats: [
-            { label: "Squat Cycles", value: "540 to 620 squats per day" },
-            { label: "Reaction Window", value: "0.18 seconds on inside edges" },
-            { label: "Core Body Temp", value: "Sustained 38.2°C inside full pads" },
-            { label: "Distance Covered", value: "7.5 km in lateral shuttle movements" }
-          ]
-        }
+          "Wicketkeeping on Day 5 dustbowls is grueling because crumbling pitch fissures produce erratic variable bounce while requiring up to six hundred deep squats in 40°C heat. Glovemen must stay down until the ball has completed its turn.",
+          "Soft hands allow the gloves to cushion sharp edges without the ball ricocheting off tense palms."
+        ]
       },
       {
-        title: "Dhoni's No-Look Lightning Stumping",
+        title: "How Did MS Dhoni Re-engineer Wicketkeeping Mechanics for 0.08-Second Stumpings?",
         paragraphs: [
-          "No discussion of subcontinent wicketkeeping is complete without analyzing MS Dhoni's radical re-engineering of the stumping motion. Traditional coaching dictated taking the ball back with the hands, then sweeping forward to break the wickets.",
-          "Dhoni eliminated the backward recoil entirely. He positioned his gloves mere inches behind the stumps, using the ball's own momentum to guide it into the bails with a sharp flick of the wrists in under 0.08 seconds—faster than the blink of a human eye.",
-          "In doing so, Dhoni turned a defensive recovery position into an offensive ambush, trapping wandering batters before their back foot could register the drag."
+          "MS Dhoni eliminated the traditional backward hand recoil, positioning his gloves inches behind the bails and redirecting the ball's momentum directly into the stumps in 0.08 seconds, turning defensive gathers into instant wickets."
         ]
       }
     ]
   },
   {
     id: "mystery-spin-carrom-and-digitized-deception",
+    slug: "mystery-spin-carrom-and-digitized-deception",
     title: "Mystery Spin, Carrom Balls, and the Digitization of Deception",
     subtitle: "From Jack Iverson's Australian bush grip to Ajantha Mendis and modern finger-spinners flicking with knuckles.",
     category: "Spin Mastery",
     readTime: "9 min read",
     publishDate: "July 29, 2026",
     issue: "Vol. XI · No. 01",
+    mainKeyword: "mystery spin carrom ball",
+    relatedKeywords: ["Ajantha Mendis bowling technique", "knuckle ball cricket spin"],
+    metaTitle: "Mystery Spin & Carrom Balls: Finger Flick Deception",
+    metaDescription: "Explore the mechanics of mystery spin and carrom balls in cricket. Discover how Ajantha Mendis and Jack Iverson flicked deliveries to deceive world-class batters.",
+    artworkAlt: "Diagram of finger-flick carrom ball release and multi-directional spin vector radar",
     statBadge: {
       value: "0.08 sec",
       label: "Time Batter Has to Decipher the Knuckle Release"
@@ -554,22 +659,25 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     summary: "How an eccentric Australian blinder, a Sri Lankan army officer, and high-definition video analysis gave birth to bowling's most mysterious weapon: the carrom ball.",
     pullQuote: "You don't play a mystery spinner with your eyes; you play him by the fear in your throat.",
     pullQuoteAttribution: "Kumar Sangakkara on Ajantha Mendis",
-    tags: ["Mystery Spin", "Carrom Ball", "Ajantha Mendis", "Sunil Narine", "Tactics"],
+    tags: ["Mystery Spin", "Carrom Ball", "Ajantha Mendis", "Sunil Narine", "Cricket Tactics"],
+    faqs: [
+      {
+        question: "How is a carrom ball bowled in cricket?",
+        answer: "A carrom ball is bowled by gripping the ball between thumb and bent middle finger, then flicking the finger forward like a carrom striker at release to make the ball turn away from right-handers."
+      }
+    ],
     sections: [
       {
-        title: "The Rediscovery of the Flick",
+        title: "How Did Ajantha Mendis and Jack Iverson Rediscover the Finger-Flick Carrom Ball?",
         paragraphs: [
-          "In 1950, a blind-striker and eccentric Melbourne club cricketer named Jack Iverson stepped into Test cricket with an alien grip: the ball pinched between his bent middle finger and thumb. Without moving his wrist, he could make the ball turn either way, flummoxing John Goddard's West Indians for twenty-one wickets in a single series.",
-          "Half a century later, a young Sri Lankan army soldier named Ajantha Mendis emerged from Colombo. Inspired by the traditional South Asian tabletop game of carrom, Mendis used his middle finger to flick the ball out of the front of the hand like an ivory striker.",
-          "In the 2008 Asia Cup Final, Mendis dismantled an Indian batting lineup featuring Sehwag, Tendulkar, Dravid, Ganguly, and Laxman with figures of six for thirteen. The cricket world stood in awe: nobody could tell whether the ball would turn in, slide straight, or spit away toward slip."
+          "Mystery spinners generate deviation by flicking the ball with the bent middle finger rather than rolling the wrist. Jack Iverson used this grip in 1950 before Sri Lanka's Ajantha Mendis adapted it from the traditional tabletop game of carrom in 2008.",
+          "Mendis took 6 for 13 in the 2008 Asia Cup final against India because batters could not predict which way the ball would spin out of the front of his hand."
         ]
       },
       {
-        title: "The High-Definition Video Arms Race",
+        title: "How Does High-Definition Video Analytics Threaten Modern Mystery Spinners?",
         paragraphs: [
-          "In the 1950s, a mystery spinner could maintain their illusion for half a decade because opponents only saw them once every four years. Today, within forty-five minutes of a new mystery spinner's debut, video analysts in Mumbai, Sydney, and London have spliced fifty high-frame-rate close-ups of the bowler's fingers onto players' tablets.",
-          "Spinners like Sunil Narine and Varun Chakaravarthy responded by concealing their grip behind their non-bowling hand until the final millisecond before release, shortening their run-ups and altering their wrist angles to keep the batters guessing in the dark.",
-          "It is cricket's ultimate cybernetic duel: human biomechanical trickery pitted against forty-thousand-dollar optical tracking cameras."
+          "Modern high-frame-rate cameras analyze spin bowler grips within minutes of debut. Modern spinners respond by concealing their hand behind the non-bowling arm until the final split-second before delivery."
         ]
       }
     ]

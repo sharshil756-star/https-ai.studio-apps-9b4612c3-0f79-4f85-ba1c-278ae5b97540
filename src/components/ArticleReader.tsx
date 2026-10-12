@@ -15,7 +15,8 @@ import {
   Send,
   ChevronRight,
   ChevronLeft,
-  Check
+  Check,
+  HelpCircle
 } from 'lucide-react';
 import { CricketArticle } from '../data/articles';
 import { CricketArtwork } from './CricketArtwork';
@@ -163,13 +164,17 @@ export const ArticleReader: React.FC<ArticleReaderProps> = ({
       {/* Reader Utility Strip */}
       <div className="sticky top-0 z-40 bg-[#FBF9F5]/95 backdrop-blur-md border-b border-[#E7DFD3] px-4 lg:px-8 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <button
-            onClick={onBack}
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              onBack();
+            }}
             className="flex items-center gap-1.5 text-xs font-mono font-medium text-[#78716C] hover:text-[#1C1917] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Table of Contents</span>
-          </button>
+            <span>Return to The Willow & Seam Homepage Dispatches</span>
+          </a>
 
           {/* Action buttons */}
           <div className="flex items-center gap-2">
@@ -274,10 +279,32 @@ export const ArticleReader: React.FC<ArticleReaderProps> = ({
           </div>
         </header>
 
-        {/* Feature Artwork Banner */}
+        {/* On-Page SEO Metadata Card (Main Keyword + 2 Related Keywords + Canonical URL) */}
+        <aside aria-label="On-Page SEO Keywords" className="mb-8 p-4 bg-[#FFFFFF] border border-[#E7DFD3] rounded-xl text-xs font-mono space-y-2">
+          <div className="flex items-center justify-between text-[#78350F] uppercase tracking-wider font-semibold border-b border-[#F2EDE4] pb-2">
+            <span>On-Page SEO Keyword Strategy</span>
+            <span className="text-[#14532D] bg-[#D1FAE5] px-2 py-0.5 rounded font-bold">AEO Optimized</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[#44403C]">
+            <div>
+              <span className="text-[#78716C]">Main Keyword: </span>
+              <strong className="text-[#1C1917] bg-[#FEF3C7] px-1.5 py-0.5 rounded font-bold">{article.mainKeyword}</strong>
+            </div>
+            <div>
+              <span className="text-[#78716C]">Related Keywords: </span>
+              <span className="text-[#14532D] font-medium">{article.relatedKeywords.join(', ')}</span>
+            </div>
+          </div>
+          <div className="text-[11px] text-[#78716C] pt-1 border-t border-[#F7F4EE]">
+            Unique Canonical URL: <code className="text-[#14532D] font-semibold">/article/{article.slug}</code>
+          </div>
+        </aside>
+
+        {/* Feature Artwork Banner with Small Vector Size & Alt Text */}
         <div className="mb-12 rounded-2xl overflow-hidden border border-[#E7DFD3] shadow-sm">
           <CricketArtwork
             type={article.artworkType}
+            alt={article.artworkAlt}
             className="w-full h-72 sm:h-96"
             variant="banner"
           />
@@ -293,7 +320,7 @@ export const ArticleReader: React.FC<ArticleReaderProps> = ({
           </p>
         </div>
 
-        {/* Dynamic Prose Body */}
+        {/* Dynamic Prose Body with AEO Question-Answer Subheadings */}
         <div
           className={`space-y-10 leading-relaxed text-[#1C1917] ${
             fontFamily === 'serif' ? 'font-serif-editorial' : 'font-sans-editorial'
@@ -308,9 +335,15 @@ export const ArticleReader: React.FC<ArticleReaderProps> = ({
           {article.sections.map((sec, idx) => (
             <section key={idx} className="space-y-6">
               {sec.title && (
-                <h2 className="text-2xl lg:text-3xl font-serif font-bold text-[#1C1917] pt-4 border-t border-[#EBE4D8]">
-                  {sec.title}
-                </h2>
+                <div className="pt-6 border-t border-[#EBE4D8] space-y-1">
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-[#78350F] font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#78350F]" />
+                    <span>AEO Question-Answer Section</span>
+                  </div>
+                  <h2 className="text-2xl lg:text-3xl font-serif font-bold text-[#1C1917] leading-snug">
+                    {sec.title}
+                  </h2>
+                </div>
               )}
 
               {sec.paragraphs.map((para, pIdx) => (
@@ -381,7 +414,7 @@ export const ArticleReader: React.FC<ArticleReaderProps> = ({
             {article.author.initials}
           </div>
           <div>
-            <div className="text-xs font-mono text-[#78350F] uppercase tracking-wider">
+            <div className="text-xs font-mono text-[#78716C] uppercase tracking-wider">
               About the Correspondent
             </div>
             <h4 className="font-serif font-bold text-lg text-[#1C1917]">
@@ -393,42 +426,71 @@ export const ArticleReader: React.FC<ArticleReaderProps> = ({
           </div>
         </div>
 
-        {/* Next / Previous Dispatch Navigators */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-12 pt-8 border-t border-[#E7DFD3]">
+        {/* AEO Frequently Answered Questions Section (Schema.org FAQPage) */}
+        {article.faqs && article.faqs.length > 0 && (
+          <section aria-label="Frequently Asked Questions" className="mt-12 p-6 bg-[#FCFAF7] border border-[#E7DFD3] rounded-xl space-y-4">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#14532D] font-bold">
+              <HelpCircle className="w-4 h-4 text-[#14532D]" />
+              <span>AEO Direct Answers for Search Engines & AI Overviews</span>
+            </div>
+            <h3 className="text-xl font-serif font-bold text-[#1C1917]">
+              Essential Questions & Answers
+            </h3>
+            <div className="space-y-3 pt-1">
+              {article.faqs.map((faq, fIdx) => (
+                <div key={fIdx} className="p-4 bg-white border border-[#EBE4D8] rounded-lg">
+                  <h4 className="font-serif font-bold text-sm text-[#1C1917]">
+                    Q: {faq.question}
+                  </h4>
+                  <p className="font-serif text-xs text-[#44403C] mt-1.5 leading-relaxed">
+                    <strong className="text-[#14532D]">A:</strong> {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Next / Previous Dispatch Navigators with Descriptive Anchor Text */}
+        <nav aria-label="Article navigation" className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-12 pt-8 border-t border-[#E7DFD3]">
           {prevArticle ? (
-            <button
-              onClick={() => {
+            <a
+              href={`/article/${prevArticle.slug}`}
+              onClick={(e) => {
+                e.preventDefault();
                 onSelectArticle(prevArticle);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="p-4 bg-[#FCFAF7] border border-[#E7DFD3] rounded-xl text-left hover:border-[#14532D] transition-all group"
+              className="p-4 bg-[#FCFAF7] border border-[#E7DFD3] rounded-xl text-left hover:border-[#14532D] transition-all group block"
             >
               <div className="flex items-center gap-1 text-[11px] font-mono text-[#78716C] group-hover:text-[#14532D]">
                 <ChevronLeft className="w-3.5 h-3.5" /> Previous Dispatch
               </div>
               <div className="font-serif font-semibold text-sm text-[#1C1917] mt-1 line-clamp-1">
-                {prevArticle.title}
+                Read: {prevArticle.title}
               </div>
-            </button>
+            </a>
           ) : <div />}
 
           {nextArticle && (
-            <button
-              onClick={() => {
+            <a
+              href={`/article/${nextArticle.slug}`}
+              onClick={(e) => {
+                e.preventDefault();
                 onSelectArticle(nextArticle);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="p-4 bg-[#FCFAF7] border border-[#E7DFD3] rounded-xl text-right hover:border-[#14532D] transition-all group"
+              className="p-4 bg-[#FCFAF7] border border-[#E7DFD3] rounded-xl text-right hover:border-[#14532D] transition-all group block"
             >
               <div className="flex items-center justify-end gap-1 text-[11px] font-mono text-[#78716C] group-hover:text-[#14532D]">
                 Next Dispatch <ChevronRight className="w-3.5 h-3.5" />
               </div>
               <div className="font-serif font-semibold text-sm text-[#1C1917] mt-1 line-clamp-1">
-                {nextArticle.title}
+                Read: {nextArticle.title}
               </div>
-            </button>
+            </a>
           )}
-        </div>
+        </nav>
 
         {/* Reader Discussion Section */}
         <section className="mt-16 pt-10 border-t-2 border-[#E7DFD3]">

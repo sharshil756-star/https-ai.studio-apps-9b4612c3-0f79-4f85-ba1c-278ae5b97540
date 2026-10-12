@@ -7,10 +7,10 @@ import {
   ArrowUpRight, 
   Clock, 
   Layers, 
-  ShieldAlert, 
   Sparkles,
   BookOpen,
-  Filter
+  TableProperties,
+  ArrowRight
 } from 'lucide-react';
 import { CRICKET_ARTICLES, CATEGORIES, CricketArticle } from './data/articles';
 import { CricketArtwork } from './components/CricketArtwork';
@@ -20,9 +20,12 @@ import { FieldTacticsVisualizer } from './components/FieldTacticsVisualizer';
 import { WillowAnatomyModal } from './components/WillowAnatomyModal';
 import { ReadingListDrawer } from './components/ReadingListDrawer';
 import { NewsletterModal } from './components/NewsletterModal';
+import { SeoKeywordMatrixModal } from './components/SeoKeywordMatrixModal';
+import { updatePageSEO } from './utils/seo';
 
 export default function App() {
-  // Navigation & View state
+  // Navigation & URL state
+  const [currentPath, setCurrentPath] = useState<string>(() => window.location.pathname || '/');
   const [activeTab, setActiveTab] = useState<'dispatches' | 'pitch-lab' | 'field-tactics'>('dispatches');
   const [selectedArticle, setSelectedArticle] = useState<CricketArticle | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('All Articles');
@@ -43,6 +46,44 @@ export default function App() {
   const [isReadingListOpen, setIsReadingListOpen] = useState(false);
   const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
   const [isWillowModalOpen, setIsWillowModalOpen] = useState(false);
+  const [isSeoModalOpen, setIsSeoModalOpen] = useState(false);
+
+  // Sync URL routes and browser history popstate
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Update route resolution and document metadata
+  useEffect(() => {
+    if (currentPath.startsWith('/article/')) {
+      const slug = currentPath.replace('/article/', '');
+      const found = CRICKET_ARTICLES.find((a) => a.slug === slug || a.id === slug);
+      if (found) {
+        setSelectedArticle(found);
+        updatePageSEO(found, currentPath);
+        return;
+      }
+    } else if (currentPath === '/pitch-lab') {
+      setActiveTab('pitch-lab');
+      setSelectedArticle(null);
+      updatePageSEO(null, '/pitch-lab');
+      return;
+    } else if (currentPath === '/field-tactics') {
+      setActiveTab('field-tactics');
+      setSelectedArticle(null);
+      updatePageSEO(null, '/field-tactics');
+      return;
+    }
+
+    // Default to dispatches index
+    setActiveTab('dispatches');
+    setSelectedArticle(null);
+    updatePageSEO(null, '/');
+  }, [currentPath]);
 
   useEffect(() => {
     try {
@@ -51,6 +92,17 @@ export default function App() {
       console.error(e);
     }
   }, [savedIds]);
+
+  const navigateTo = (path: string, article?: CricketArticle | null) => {
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
+    setCurrentPath(path);
+    if (article !== undefined) {
+      setSelectedArticle(article);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const toggleBookmark = (article: CricketArticle) => {
     setSavedIds((prev) => 
@@ -76,6 +128,8 @@ export default function App() {
         art.subtitle.toLowerCase().includes(q) ||
         art.summary.toLowerCase().includes(q) ||
         art.author.name.toLowerCase().includes(q) ||
+        art.mainKeyword.toLowerCase().includes(q) ||
+        art.relatedKeywords.some((k) => k.toLowerCase().includes(q)) ||
         art.tags.some((t) => t.toLowerCase().includes(q));
 
       return matchesCategory && matchesSearch;
@@ -95,7 +149,6 @@ export default function App() {
     });
   }, [selectedCategory, searchQuery, sortOption]);
 
-  // Lead story is the first featured or first in list
   const leadArticle = filteredArticles[0] || CRICKET_ARTICLES[0];
   const secondaryArticles = filteredArticles.slice(1, 4);
   const remainingArticles = filteredArticles.slice(4);
@@ -106,13 +159,10 @@ export default function App() {
       <div className="min-h-screen bg-[#FBF9F5] text-[#1C1917]">
         <ArticleReader
           article={selectedArticle}
-          onBack={() => {
-            setSelectedArticle(null);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('/', null)}
           isBookmarked={savedIds.includes(selectedArticle.id)}
           onToggleBookmark={toggleBookmark}
-          onSelectArticle={(art) => setSelectedArticle(art)}
+          onSelectArticle={(art) => navigateTo(`/article/${art.slug}`, art)}
           allArticles={CRICKET_ARTICLES}
         />
         <WillowAnatomyModal
@@ -123,13 +173,18 @@ export default function App() {
           isOpen={isReadingListOpen}
           onClose={() => setIsReadingListOpen(false)}
           savedArticles={savedArticles}
-          onSelectArticle={(art) => setSelectedArticle(art)}
+          onSelectArticle={(art) => navigateTo(`/article/${art.slug}`, art)}
           onRemoveArticle={(id) => setSavedIds((prev) => prev.filter((i) => i !== id))}
           onClearAll={() => setSavedIds([])}
         />
         <NewsletterModal
           isOpen={isNewsletterOpen}
           onClose={() => setIsNewsletterOpen(false)}
+        />
+        <SeoKeywordMatrixModal
+          isOpen={isSeoModalOpen}
+          onClose={() => setIsSeoModalOpen(false)}
+          onNavigateToUrl={(url) => navigateTo(url)}
         />
       </div>
     );
@@ -147,7 +202,7 @@ export default function App() {
             href="/"
             onClick={(e) => {
               e.preventDefault();
-              setActiveTab('dispatches');
+              navigateTo('/');
               setSelectedCategory('All Articles');
               setSearchQuery('');
             }}
@@ -156,43 +211,62 @@ export default function App() {
             The Willow & Seam
           </a>
 
-          {/* Zone 2: 4-6 clean text navigation links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#57534E]">
-            <button
-              onClick={() => setActiveTab('dispatches')}
+          {/* Zone 2: 4-6 clean text navigation links with descriptive anchor text */}
+          <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-7 text-sm font-medium text-[#57534E]">
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/');
+              }}
               className={`hover:text-[#1C1917] transition-colors pb-0.5 ${
                 activeTab === 'dispatches' ? 'text-[#14532D] font-semibold border-b-2 border-[#14532D]' : ''
               }`}
             >
-              Dispatches
-            </button>
-            <button
-              onClick={() => setActiveTab('pitch-lab')}
+              Cricket Dispatches
+            </a>
+            <a
+              href="/pitch-lab"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/pitch-lab');
+              }}
               className={`hover:text-[#1C1917] transition-colors pb-0.5 ${
                 activeTab === 'pitch-lab' ? 'text-[#14532D] font-semibold border-b-2 border-[#14532D]' : ''
               }`}
             >
-              Pitch Lab
-            </button>
-            <button
-              onClick={() => setActiveTab('field-tactics')}
+              Pitch Conditions Lab
+            </a>
+            <a
+              href="/field-tactics"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/field-tactics');
+              }}
               className={`hover:text-[#1C1917] transition-colors pb-0.5 ${
                 activeTab === 'field-tactics' ? 'text-[#14532D] font-semibold border-b-2 border-[#14532D]' : ''
               }`}
             >
-              Field Geometries
-            </button>
+              Fielding Geometries
+            </a>
             <button
               onClick={() => setIsWillowModalOpen(true)}
-              className="hover:text-[#1C1917] transition-colors"
+              className="hover:text-[#1C1917] transition-colors cursor-pointer"
             >
               Willow Anatomy
             </button>
             <button
-              onClick={() => setIsReadingListOpen(true)}
-              className="hover:text-[#1C1917] transition-colors flex items-center gap-1.5"
+              onClick={() => setIsSeoModalOpen(true)}
+              className="hover:text-[#14532D] transition-colors flex items-center gap-1 text-[#78350F] font-semibold cursor-pointer"
             >
-              <span>Ledger</span>
+              <TableProperties className="w-3.5 h-3.5" />
+              <span>SEO Matrix</span>
+            </button>
+            <button
+              onClick={() => setIsReadingListOpen(true)}
+              className="hover:text-[#1C1917] transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>Reading Ledger</span>
               {savedIds.length > 0 && (
                 <span className="text-[11px] font-mono text-[#14532D] font-bold">
                   ({savedIds.length})
@@ -216,7 +290,7 @@ export default function App() {
 
             <button
               onClick={() => setIsNewsletterOpen(true)}
-              className="px-4 py-2 text-xs font-medium text-white bg-[#14532D] rounded-lg hover:bg-[#0F3E22] transition-colors whitespace-nowrap shadow-xs flex items-center gap-1.5"
+              className="px-4 py-2 text-xs font-medium text-white bg-[#14532D] rounded-lg hover:bg-[#0F3E22] transition-colors whitespace-nowrap shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
               <Mail className="w-3.5 h-3.5" />
               <span>Morning Dispatch</span>
@@ -230,24 +304,32 @@ export default function App() {
         {/* Dynamic Views: Pitch Lab or Field Tactics */}
         {activeTab === 'pitch-lab' && (
           <div className="space-y-6">
-            <button
-              onClick={() => setActiveTab('dispatches')}
-              className="text-xs font-mono text-[#78716C] hover:text-[#1C1917] flex items-center gap-1 mb-4"
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/');
+              }}
+              className="text-xs font-mono text-[#78716C] hover:text-[#1C1917] inline-flex items-center gap-1 mb-4"
             >
-              ← Back to Journal Dispatches
-            </button>
+              ← Return to Cricket Journal Dispatches
+            </a>
             <PitchConditionsLab />
           </div>
         )}
 
         {activeTab === 'field-tactics' && (
           <div className="space-y-6">
-            <button
-              onClick={() => setActiveTab('dispatches')}
-              className="text-xs font-mono text-[#78716C] hover:text-[#1C1917] flex items-center gap-1 mb-4"
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/');
+              }}
+              className="text-xs font-mono text-[#78716C] hover:text-[#1C1917] inline-flex items-center gap-1 mb-4"
             >
-              ← Back to Journal Dispatches
-            </button>
+              ← Return to Cricket Journal Dispatches
+            </a>
             <FieldTacticsVisualizer />
           </div>
         )}
@@ -255,40 +337,55 @@ export default function App() {
         {/* Primary Dispatches Index View */}
         {activeTab === 'dispatches' && (
           <>
-            {/* Masthead Banner */}
+            {/* Masthead Banner with Semantic Hierarchy */}
             <div className="border-b border-[#E7DFD3] pb-8 mb-10">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                   <div className="text-xs font-mono uppercase tracking-widest text-[#78350F] mb-1">
-                    Vol. XII · Autumn Season · Ten Curated Dispatches
+                    Vol. XII · On-Page SEO & AEO Optimized Publication
                   </div>
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-[#1C1917] tracking-tight text-balance">
                     The Willow & Seam
                   </h1>
                   <p className="text-base sm:text-lg font-serif text-[#57534E] mt-2 max-w-2xl leading-relaxed">
-                    An independent journal dedicated to cricket&apos;s timeless craft, aerodynamic mystery, five-day epics, and modern biomechanical revolution.
+                    An authoritative cricket analysis journal featuring in-depth articles on bowling aerodynamics, batting mechanics, willow craftsmanship, and tactical fielding blueprints.
                   </p>
                 </div>
 
-                {/* Quick Interactive Tool Ribbons */}
+                {/* Quick Interactive Tool Ribbons with SEO Matrix Inspector */}
                 <div className="flex flex-wrap items-center gap-2">
                   <button
-                    onClick={() => setActiveTab('pitch-lab')}
+                    onClick={() => setIsSeoModalOpen(true)}
+                    className="px-3.5 py-2 text-xs font-medium bg-[#FEF3C7] border border-[#F59E0B]/40 rounded-lg text-[#78350F] hover:bg-[#FDE68A] transition-colors flex items-center gap-1.5 font-mono cursor-pointer shadow-2xs"
+                  >
+                    <TableProperties className="w-3.5 h-3.5 text-[#78350F]" />
+                    <span>Keyword Research Table (Step 2)</span>
+                  </button>
+                  <a
+                    href="/pitch-lab"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigateTo('/pitch-lab');
+                    }}
                     className="px-3.5 py-2 text-xs font-medium bg-[#FFFFFF] border border-[#E7DFD3] rounded-lg text-[#44403C] hover:border-[#14532D] hover:text-[#14532D] transition-colors flex items-center gap-1.5"
                   >
                     <Compass className="w-3.5 h-3.5 text-[#14532D]" />
                     <span>Launch Pitch Lab</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('field-tactics')}
+                  </a>
+                  <a
+                    href="/field-tactics"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigateTo('/field-tactics');
+                    }}
                     className="px-3.5 py-2 text-xs font-medium bg-[#FFFFFF] border border-[#E7DFD3] rounded-lg text-[#44403C] hover:border-[#14532D] hover:text-[#14532D] transition-colors flex items-center gap-1.5"
                   >
                     <Layers className="w-3.5 h-3.5 text-[#14532D]" />
                     <span>Field Geometries</span>
-                  </button>
+                  </a>
                   <button
                     onClick={() => setIsWillowModalOpen(true)}
-                    className="px-3.5 py-2 text-xs font-medium bg-[#FFFFFF] border border-[#E7DFD3] rounded-lg text-[#44403C] hover:border-[#78350F] hover:text-[#78350F] transition-colors flex items-center gap-1.5"
+                    className="px-3.5 py-2 text-xs font-medium bg-[#FFFFFF] border border-[#E7DFD3] rounded-lg text-[#44403C] hover:border-[#78350F] hover:text-[#78350F] transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-[#78350F]" />
                     <span>Inspect Willow</span>
@@ -305,13 +402,13 @@ export default function App() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search dispatches, players, bowling tactics, or craft..."
+                    placeholder="Search dispatches, keywords (e.g. reverse swing, willow)..."
                     className="w-full bg-[#FFFFFF] border border-[#E7DFD3] rounded-lg pl-9 pr-4 py-2 text-xs text-[#1C1917] placeholder:text-[#A8A29E] focus:outline-none focus:ring-1 focus:ring-[#14532D]"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#78716C] hover:text-[#1C1917]"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#78716C] hover:text-[#1C1917] cursor-pointer"
                     >
                       Clear
                     </button>
@@ -341,7 +438,7 @@ export default function App() {
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors ${
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-colors cursor-pointer ${
                         isActive
                           ? 'bg-[#14532D] text-white shadow-2xs'
                           : 'bg-[#FCFAF7] text-[#57534E] hover:bg-[#F2EDE4] hover:text-[#1C1917] border border-[#E7DFD3]'
@@ -369,7 +466,7 @@ export default function App() {
                     setSelectedCategory('All Articles');
                     setSearchQuery('');
                   }}
-                  className="mt-5 px-4 py-2 bg-[#14532D] text-white text-xs font-medium rounded-lg"
+                  className="mt-5 px-4 py-2 bg-[#14532D] text-white text-xs font-medium rounded-lg cursor-pointer"
                 >
                   Reset All Filters
                 </button>
@@ -380,12 +477,13 @@ export default function App() {
                     TIER 1 SALIENCE: LEAD STORY (Dominant visual anchor & editorial depth)
                     ========================================================================= */}
                 {leadArticle && (
-                  <section className="bg-[#FFFFFF] border border-[#E7DFD3] rounded-2xl overflow-hidden shadow-xs hover:border-[#D6CEBE] transition-all">
+                  <section aria-labelledby="lead-article-title" className="bg-[#FFFFFF] border border-[#E7DFD3] rounded-2xl overflow-hidden shadow-xs hover:border-[#D6CEBE] transition-all">
                     <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-                      {/* Dominant Visual Artwork */}
+                      {/* Dominant Visual Artwork with Small Vector Size & Alt Text */}
                       <div className="lg:col-span-7 relative min-h-[320px] lg:min-h-[460px]">
                         <CricketArtwork
                           type={leadArticle.artworkType}
+                          alt={leadArticle.artworkAlt}
                           className="w-full h-full min-h-[320px] lg:min-h-[460px]"
                           variant="hero"
                         />
@@ -400,14 +498,20 @@ export default function App() {
                             <span aria-hidden="true">·</span>
                             <span>{leadArticle.readTime}</span>
                             <span aria-hidden="true">·</span>
-                            <span>Featured Lead</span>
+                            <span>Main Keyword: {leadArticle.mainKeyword}</span>
                           </div>
 
-                          <h2
-                            onClick={() => setSelectedArticle(leadArticle)}
-                            className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#1C1917] hover:text-[#14532D] cursor-pointer transition-colors leading-[1.2] text-balance"
-                          >
-                            {leadArticle.title}
+                          <h2 id="lead-article-title">
+                            <a
+                              href={`/article/${leadArticle.slug}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigateTo(`/article/${leadArticle.slug}`, leadArticle);
+                              }}
+                              className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#1C1917] hover:text-[#14532D] transition-colors leading-[1.2] text-balance block"
+                            >
+                              {leadArticle.title}
+                            </a>
                           </h2>
 
                           <p className="text-sm sm:text-base font-serif text-[#57534E] mt-3 leading-relaxed">
@@ -428,7 +532,7 @@ export default function App() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => toggleBookmark(leadArticle)}
-                              className={`p-2 rounded-lg border transition-colors ${
+                              className={`p-2 rounded-lg border transition-colors cursor-pointer ${
                                 savedIds.includes(leadArticle.id)
                                   ? 'bg-[#14532D] text-white border-[#14532D]'
                                   : 'bg-white text-[#78716C] border-[#E7DFD3] hover:text-[#1C1917]'
@@ -438,13 +542,17 @@ export default function App() {
                               <Bookmark className="w-3.5 h-3.5" />
                             </button>
 
-                            <button
-                              onClick={() => setSelectedArticle(leadArticle)}
+                            <a
+                              href={`/article/${leadArticle.slug}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigateTo(`/article/${leadArticle.slug}`, leadArticle);
+                              }}
                               className="px-4 py-2 bg-[#14532D] text-white text-xs font-medium rounded-lg hover:bg-[#0F3E22] transition-colors flex items-center gap-1 shadow-2xs"
                             >
-                              <span>Read Dispatch</span>
+                              <span>Read Complete Article</span>
                               <ArrowUpRight className="w-3.5 h-3.5" />
-                            </button>
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -453,14 +561,14 @@ export default function App() {
                 )}
 
                 {/* =========================================================================
-                    TIER 2 SALIENCE: SECONDARY FEATURED TRIO
+                    TIER 2 SALIENCE: SECONDARY FEATURED TRIO (With descriptive anchor texts)
                     ========================================================================= */}
                 {secondaryArticles.length > 0 && (
-                  <section>
+                  <section aria-labelledby="curated-features-title">
                     <div className="flex items-center justify-between border-b border-[#E7DFD3] pb-3 mb-8">
-                      <div className="text-xs uppercase tracking-widest text-[#78350F] font-mono font-semibold">
-                        Curated Features · In-Depth Studies
-                      </div>
+                      <h2 id="curated-features-title" className="text-xs uppercase tracking-widest text-[#78350F] font-mono font-semibold">
+                        Curated Features · In-Depth Cricket Studies
+                      </h2>
                       <div className="text-xs font-mono text-[#78716C]">
                         Longform Analysis
                       </div>
@@ -468,15 +576,16 @@ export default function App() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       {secondaryArticles.map((art) => (
-                        <div
+                        <article
                           key={art.id}
                           className="bg-[#FFFFFF] border border-[#E7DFD3] rounded-xl overflow-hidden flex flex-col justify-between transition-all hover:border-[#D6CEBE] hover:shadow-sm group"
                         >
                           <div>
-                            {/* Card Artwork */}
+                            {/* Card Artwork with Alt Text */}
                             <div className="h-48 overflow-hidden relative">
                               <CricketArtwork
                                 type={art.artworkType}
+                                alt={art.artworkAlt}
                                 className="w-full h-full group-hover:scale-105 transition-transform duration-500"
                                 variant="card"
                               />
@@ -490,16 +599,26 @@ export default function App() {
                                 <span>{art.readTime}</span>
                               </div>
 
-                              <h3
-                                onClick={() => setSelectedArticle(art)}
-                                className="text-xl font-serif font-bold text-[#1C1917] group-hover:text-[#14532D] cursor-pointer transition-colors leading-snug line-clamp-2"
-                              >
-                                {art.title}
+                              <h3 className="text-xl font-serif font-bold text-[#1C1917] group-hover:text-[#14532D] transition-colors leading-snug line-clamp-2">
+                                <a
+                                  href={`/article/${art.slug}`}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    navigateTo(`/article/${art.slug}`, art);
+                                  }}
+                                  className="block"
+                                >
+                                  {art.title}
+                                </a>
                               </h3>
 
                               <p className="text-xs font-serif text-[#57534E] mt-2 line-clamp-3 leading-relaxed">
                                 {art.summary}
                               </p>
+
+                              <div className="mt-3 text-[11px] font-mono text-[#78716C]">
+                                Keyword: <span className="text-[#14532D] font-semibold">{art.mainKeyword}</span>
+                              </div>
                             </div>
                           </div>
 
@@ -510,46 +629,51 @@ export default function App() {
                             <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => toggleBookmark(art)}
-                                className={`p-1.5 rounded-md border transition-colors ${
+                                className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
                                   savedIds.includes(art.id)
                                     ? 'bg-[#14532D] text-white border-[#14532D]'
                                     : 'bg-white text-[#78716C] border-[#E7DFD3] hover:text-[#1C1917]'
                                 }`}
+                                title="Save to Ledger"
                               >
                                 <Bookmark className="w-3.5 h-3.5" />
                               </button>
-                              <button
-                                onClick={() => setSelectedArticle(art)}
+                              <a
+                                href={`/article/${art.slug}`}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  navigateTo(`/article/${art.slug}`, art);
+                                }}
                                 className="text-xs font-medium text-[#14532D] hover:underline flex items-center gap-1"
                               >
-                                <span>Study</span>
+                                <span>Read In-Depth Study</span>
                                 <ArrowUpRight className="w-3 h-3" />
-                              </button>
+                              </a>
                             </div>
                           </div>
-                        </div>
+                        </article>
                       ))}
                     </div>
                   </section>
                 )}
 
                 {/* =========================================================================
-                    TIER 3 SALIENCE: THE COMPLETE ARCHIVE (Remaining articles in catalog list)
+                    TIER 3 SALIENCE: THE COMPLETE ARCHIVE (Remaining articles with descriptive anchors)
                     ========================================================================= */}
                 {remainingArticles.length > 0 && (
-                  <section>
+                  <section aria-labelledby="archive-title">
                     <div className="flex items-center justify-between border-b border-[#E7DFD3] pb-3 mb-6">
-                      <div className="text-xs uppercase tracking-widest text-[#78350F] font-mono font-semibold">
+                      <h2 id="archive-title" className="text-xs uppercase tracking-widest text-[#78350F] font-mono font-semibold">
                         The Complete Journal Archive ({remainingArticles.length} Dispatches)
-                      </div>
+                      </h2>
                       <div className="text-xs font-mono text-[#78716C]">
                         Historical & Technical Records
                       </div>
                     </div>
 
                     <div className="divide-y divide-[#E7DFD3] border-y border-[#E7DFD3]">
-                      {remainingArticles.map((art, idx) => (
-                        <div
+                      {remainingArticles.map((art) => (
+                        <article
                           key={art.id}
                           className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-[#F7F4EE]/50 px-4 -mx-4 rounded-lg transition-colors group"
                         >
@@ -560,14 +684,20 @@ export default function App() {
                               <span aria-hidden="true">·</span>
                               <span>{art.readTime}</span>
                               <span aria-hidden="true">·</span>
-                              <span>{art.publishDate}</span>
+                              <span>Target: {art.mainKeyword}</span>
                             </div>
 
-                            <h3
-                              onClick={() => setSelectedArticle(art)}
-                              className="text-xl font-serif font-bold text-[#1C1917] group-hover:text-[#14532D] cursor-pointer transition-colors leading-snug"
-                            >
-                              {art.title}
+                            <h3 className="text-xl font-serif font-bold text-[#1C1917] group-hover:text-[#14532D] transition-colors leading-snug">
+                              <a
+                                href={`/article/${art.slug}`}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  navigateTo(`/article/${art.slug}`, art);
+                                }}
+                                className="block"
+                              >
+                                {art.title}
+                              </a>
                             </h3>
 
                             <p className="text-xs sm:text-sm font-serif text-[#57534E] mt-1.5 max-w-3xl leading-relaxed line-clamp-2">
@@ -577,14 +707,14 @@ export default function App() {
                             <div className="flex items-center gap-3 mt-3 text-xs text-[#78716C] font-mono">
                               <span>By <strong className="text-[#1C1917]">{art.author.name}</strong></span>
                               <span aria-hidden="true">·</span>
-                              <span>{art.tags.slice(0, 3).map((t) => `#${t}`).join(' ')}</span>
+                              <span>URL: <code>/article/{art.slug}</code></span>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-3 shrink-0 self-start md:self-center">
                             <button
                               onClick={() => toggleBookmark(art)}
-                              className={`p-2 rounded-lg border transition-colors ${
+                              className={`p-2 rounded-lg border transition-colors cursor-pointer ${
                                 savedIds.includes(art.id)
                                   ? 'bg-[#14532D] text-white border-[#14532D]'
                                   : 'bg-white text-[#78716C] border-[#E7DFD3] hover:text-[#1C1917]'
@@ -594,15 +724,19 @@ export default function App() {
                               <Bookmark className="w-4 h-4" />
                             </button>
 
-                            <button
-                              onClick={() => setSelectedArticle(art)}
+                            <a
+                              href={`/article/${art.slug}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigateTo(`/article/${art.slug}`, art);
+                              }}
                               className="px-4 py-2 bg-white border border-[#E7DFD3] group-hover:border-[#14532D] group-hover:bg-[#14532D] group-hover:text-white text-[#1C1917] text-xs font-medium rounded-lg transition-all flex items-center gap-1.5 shadow-2xs"
                             >
-                              <span>Open Article</span>
+                              <span>Explore Full Article</span>
                               <ArrowUpRight className="w-3.5 h-3.5" />
-                            </button>
+                            </a>
                           </div>
-                        </div>
+                        </article>
                       ))}
                     </div>
                   </section>
@@ -613,36 +747,42 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer */}
+      {/* Footer with Descriptive Anchor Links */}
       <footer className="border-t border-[#E7DFD3] bg-[#F7F4EE] mt-20 py-12 px-6 lg:px-12 text-[#78716C]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-mono">
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <span className="font-serif font-bold text-base text-[#1C1917]">The Willow & Seam</span>
             <span className="hidden sm:inline" aria-hidden="true">·</span>
-            <span>A Monograph on Cricket Lore & Tactica</span>
+            <span>Cricket Analysis Journal & Tactics</span>
             <span className="hidden sm:inline" aria-hidden="true">·</span>
-            <span>10 Longform Articles</span>
+            <span>10 Longform Articles with Own Optimized Imagery</span>
           </div>
 
           <div className="flex items-center gap-6">
             <button
-              onClick={() => setIsNewsletterOpen(true)}
-              className="text-[#14532D] hover:underline"
+              onClick={() => setIsSeoModalOpen(true)}
+              className="text-[#78350F] hover:underline font-bold cursor-pointer"
             >
-              The Morning Session Dispatch
+              Keyword Research Matrix (Step 2)
+            </button>
+            <button
+              onClick={() => setIsNewsletterOpen(true)}
+              className="text-[#14532D] hover:underline cursor-pointer"
+            >
+              Subscribe to Morning Dispatch
             </button>
             <button
               onClick={() => setIsWillowModalOpen(true)}
-              className="hover:text-[#1C1917]"
+              className="hover:text-[#1C1917] cursor-pointer"
             >
-              Willow Anatomy
+              Inspect Willow Anatomy
             </button>
             <button
               onClick={() => {
-                setActiveTab('dispatches');
+                navigateTo('/');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-[#1C1917]"
+              className="hover:text-[#1C1917] cursor-pointer"
             >
               Back to Top ↑
             </button>
@@ -659,13 +799,18 @@ export default function App() {
         isOpen={isReadingListOpen}
         onClose={() => setIsReadingListOpen(false)}
         savedArticles={savedArticles}
-        onSelectArticle={(art) => setSelectedArticle(art)}
+        onSelectArticle={(art) => navigateTo(`/article/${art.slug}`, art)}
         onRemoveArticle={(id) => setSavedIds((prev) => prev.filter((i) => i !== id))}
         onClearAll={() => setSavedIds([])}
       />
       <NewsletterModal
         isOpen={isNewsletterOpen}
         onClose={() => setIsNewsletterOpen(false)}
+      />
+      <SeoKeywordMatrixModal
+        isOpen={isSeoModalOpen}
+        onClose={() => setIsSeoModalOpen(false)}
+        onNavigateToUrl={(url) => navigateTo(url)}
       />
     </div>
   );

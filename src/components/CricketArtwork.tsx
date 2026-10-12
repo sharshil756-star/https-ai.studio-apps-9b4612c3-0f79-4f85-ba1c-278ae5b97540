@@ -4,19 +4,23 @@ interface CricketArtworkProps {
   type: string;
   className?: string;
   variant?: 'card' | 'hero' | 'banner';
+  alt?: string;
 }
 
 export const CricketArtwork: React.FC<CricketArtworkProps> = ({
   type,
   className = '',
   variant = 'card',
+  alt,
 }) => {
   const isHero = variant === 'hero';
+  const imgAlt = alt || "Cricket editorial illustration";
 
-  switch (type) {
-    case 'willow':
-      return (
-        <div className={`relative overflow-hidden bg-gradient-to-br from-[#2D241E] via-[#3E3228] to-[#1C1612] ${className} flex items-center justify-center`}>
+  const renderGraphic = () => {
+    switch (type) {
+      case 'willow':
+        return (
+          <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-[#2D241E] via-[#3E3228] to-[#1C1612] flex items-center justify-center">
           {/* Subtle woodgrain lines */}
           <svg className="absolute inset-0 w-full h-full opacity-25" viewBox="0 0 600 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0,50 Q150,40 300,55 T600,45" stroke="#E2D9C8" strokeWidth="1.2" fill="none" />
@@ -480,5 +484,17 @@ export const CricketArtwork: React.FC<CricketArtworkProps> = ({
           </div>
         </div>
       );
-  }
+    }
+  };
+
+  return (
+    <figure
+      role="img"
+      aria-label={imgAlt}
+      className={`relative m-0 p-0 overflow-hidden ${className}`}
+    >
+      <span className="sr-only">{imgAlt}</span>
+      {renderGraphic()}
+    </figure>
+  );
 };
