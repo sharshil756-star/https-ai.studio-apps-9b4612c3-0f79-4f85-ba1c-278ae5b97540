@@ -36,9 +36,9 @@ export default function App() {
   const [savedIds, setSavedIds] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem('willow_saved_articles');
-      return stored ? JSON.parse(stored) : ['alchemy-of-english-willow'];
+      return stored ? JSON.parse(stored) : ['english-willow-cricket-bats'];
     } catch {
-      return ['alchemy-of-english-willow'];
+      return ['english-willow-cricket-bats'];
     }
   });
 
@@ -61,21 +61,29 @@ export default function App() {
   useEffect(() => {
     if (currentPath.startsWith('/article/')) {
       const slug = currentPath.replace('/article/', '');
-      const found = CRICKET_ARTICLES.find((a) => a.slug === slug || a.id === slug);
+      const found = CRICKET_ARTICLES.find(
+        (a) => a.slug === slug || a.id === slug || (a.aliases && a.aliases.includes(slug))
+      );
       if (found) {
         setSelectedArticle(found);
-        updatePageSEO(found, currentPath);
+        updatePageSEO(found, `/article/${found.slug}`);
         return;
       }
-    } else if (currentPath === '/pitch-lab') {
+    } else if (currentPath === '/pitch-conditions-lab' || currentPath === '/pitch-lab') {
       setActiveTab('pitch-lab');
       setSelectedArticle(null);
-      updatePageSEO(null, '/pitch-lab');
+      updatePageSEO(null, '/pitch-conditions-lab');
       return;
-    } else if (currentPath === '/field-tactics') {
+    } else if (currentPath === '/field-tactics-visualizer' || currentPath === '/field-tactics') {
       setActiveTab('field-tactics');
       setSelectedArticle(null);
-      updatePageSEO(null, '/field-tactics');
+      updatePageSEO(null, '/field-tactics-visualizer');
+      return;
+    } else if (currentPath === '/seo-keyword-matrix') {
+      setIsSeoModalOpen(true);
+      setActiveTab('dispatches');
+      setSelectedArticle(null);
+      updatePageSEO(null, '/seo-keyword-matrix');
       return;
     }
 
@@ -226,10 +234,10 @@ export default function App() {
               Cricket Dispatches
             </a>
             <a
-              href="/pitch-lab"
+              href="/pitch-conditions-lab"
               onClick={(e) => {
                 e.preventDefault();
-                navigateTo('/pitch-lab');
+                navigateTo('/pitch-conditions-lab');
               }}
               className={`hover:text-[#1C1917] transition-colors pb-0.5 ${
                 activeTab === 'pitch-lab' ? 'text-[#14532D] font-semibold border-b-2 border-[#14532D]' : ''
@@ -238,10 +246,10 @@ export default function App() {
               Pitch Conditions Lab
             </a>
             <a
-              href="/field-tactics"
+              href="/field-tactics-visualizer"
               onClick={(e) => {
                 e.preventDefault();
-                navigateTo('/field-tactics');
+                navigateTo('/field-tactics-visualizer');
               }}
               className={`hover:text-[#1C1917] transition-colors pb-0.5 ${
                 activeTab === 'field-tactics' ? 'text-[#14532D] font-semibold border-b-2 border-[#14532D]' : ''
@@ -255,13 +263,17 @@ export default function App() {
             >
               Willow Anatomy
             </button>
-            <button
-              onClick={() => setIsSeoModalOpen(true)}
+            <a
+              href="/seo-keyword-matrix"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/seo-keyword-matrix');
+              }}
               className="hover:text-[#14532D] transition-colors flex items-center gap-1 text-[#78350F] font-semibold cursor-pointer"
             >
               <TableProperties className="w-3.5 h-3.5" />
               <span>SEO Matrix</span>
-            </button>
+            </a>
             <button
               onClick={() => setIsReadingListOpen(true)}
               className="hover:text-[#1C1917] transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -354,18 +366,22 @@ export default function App() {
 
                 {/* Quick Interactive Tool Ribbons with SEO Matrix Inspector */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    onClick={() => setIsSeoModalOpen(true)}
+                  <a
+                    href="/seo-keyword-matrix"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigateTo('/seo-keyword-matrix');
+                    }}
                     className="px-3.5 py-2 text-xs font-medium bg-[#FEF3C7] border border-[#F59E0B]/40 rounded-lg text-[#78350F] hover:bg-[#FDE68A] transition-colors flex items-center gap-1.5 font-mono cursor-pointer shadow-2xs"
                   >
                     <TableProperties className="w-3.5 h-3.5 text-[#78350F]" />
                     <span>Keyword Research Table (Step 2)</span>
-                  </button>
+                  </a>
                   <a
-                    href="/pitch-lab"
+                    href="/pitch-conditions-lab"
                     onClick={(e) => {
                       e.preventDefault();
-                      navigateTo('/pitch-lab');
+                      navigateTo('/pitch-conditions-lab');
                     }}
                     className="px-3.5 py-2 text-xs font-medium bg-[#FFFFFF] border border-[#E7DFD3] rounded-lg text-[#44403C] hover:border-[#14532D] hover:text-[#14532D] transition-colors flex items-center gap-1.5"
                   >
@@ -373,10 +389,10 @@ export default function App() {
                     <span>Launch Pitch Lab</span>
                   </a>
                   <a
-                    href="/field-tactics"
+                    href="/field-tactics-visualizer"
                     onClick={(e) => {
                       e.preventDefault();
-                      navigateTo('/field-tactics');
+                      navigateTo('/field-tactics-visualizer');
                     }}
                     className="px-3.5 py-2 text-xs font-medium bg-[#FFFFFF] border border-[#E7DFD3] rounded-lg text-[#44403C] hover:border-[#14532D] hover:text-[#14532D] transition-colors flex items-center gap-1.5"
                   >

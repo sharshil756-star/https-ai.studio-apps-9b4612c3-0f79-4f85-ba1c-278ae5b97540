@@ -295,8 +295,13 @@ export const ArticleReader: React.FC<ArticleReaderProps> = ({
               <span className="text-[#14532D] font-medium">{article.relatedKeywords.join(', ')}</span>
             </div>
           </div>
-          <div className="text-[11px] text-[#78716C] pt-1 border-t border-[#F7F4EE]">
-            Unique Canonical URL: <code className="text-[#14532D] font-semibold">/article/{article.slug}</code>
+          <div className="text-[11px] text-[#78716C] pt-1.5 border-t border-[#F7F4EE] flex flex-wrap items-center justify-between gap-2">
+            <div>
+              Unique Canonical URL: <code className="text-[#14532D] font-bold">/article/{article.slug}</code>
+            </div>
+            <span className="text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-mono">
+              ✓ Good URL Rules: Lowercase · Hyphens · No Stop Words · Keyword-Rich
+            </span>
           </div>
         </aside>
 

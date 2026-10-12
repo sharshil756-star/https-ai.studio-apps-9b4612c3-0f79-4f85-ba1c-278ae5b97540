@@ -15,7 +15,8 @@ export interface ArticleFAQ {
 
 export interface CricketArticle {
   id: string;
-  slug: string; // Unique URL path
+  slug: string; // Unique clean URL path following good URL rules
+  aliases?: string[]; // Backward compatible route aliases
   title: string;
   subtitle: string;
   category: 
@@ -60,8 +61,9 @@ export interface CricketArticle {
 
 export const CRICKET_ARTICLES: CricketArticle[] = [
   {
-    id: "alchemy-of-english-willow",
-    slug: "alchemy-of-english-willow",
+    id: "english-willow-cricket-bats",
+    slug: "english-willow-cricket-bats",
+    aliases: ["alchemy-of-english-willow"],
     title: "The Alchemy of English Willow: From Suffolk Marshlands to the Test Match Crease",
     subtitle: "How master podshavers shape seasoned Salix alba caerulea clefts into the resonant instruments of cricketing immortals.",
     category: "Craft & Equipment",
@@ -137,8 +139,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "reverse-swing-and-whispering-seam",
-    slug: "reverse-swing-and-whispering-seam",
+    id: "reverse-swing-bowling-physics",
+    slug: "reverse-swing-bowling-physics",
+    aliases: ["reverse-swing-and-whispering-seam"],
     title: "Reverse Swing & The Whispering Seam: The Dark Physics of Bowling's Most Lethal Art",
     subtitle: "From Sarfraz Nawaz's dry Gaddafi Stadium experiments to Wasim and Waqar's banana Yorkers: how aerodynamic chaos dismantled conventional wisdom.",
     category: "Bowling & Tactics",
@@ -213,8 +216,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "lost-art-of-leg-spin",
-    slug: "lost-art-of-leg-spin",
+    id: "leg-spin-bowling-technique",
+    slug: "leg-spin-bowling-technique",
+    aliases: ["lost-art-of-leg-spin"],
     title: "The Hypnotic Geometry of Leg-Spin: From Clarrie Grimmett to Shane Warne's Golden Era",
     subtitle: "Why the wrist-spinner's trade is the most psychologically punishing and aesthetically sublime discipline in world sport.",
     category: "Spin Mastery",
@@ -289,8 +293,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "eden-gardens-2001-partnership",
-    slug: "eden-gardens-2001-partnership",
+    id: "eden-gardens-2001-test-match",
+    slug: "eden-gardens-2001-test-match",
+    aliases: ["eden-gardens-2001-partnership"],
     title: "Eden Gardens 2001: The Sweltering Kolkata Miracle that Defied Infinity",
     subtitle: "Follow-on enforced, 274 runs adrift, facing Australia's 16-match juggernaut: how VVS Laxman and Rahul Dravid batted an entire day without parting.",
     category: "Historic Epics",
@@ -364,8 +369,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "death-of-90-over-day-rise-of-blitz",
-    slug: "death-of-90-over-day-rise-of-blitz",
+    id: "t20-cricket-batting-biomechanics",
+    slug: "t20-cricket-batting-biomechanics",
+    aliases: ["death-of-90-over-day-rise-of-blitz"],
     title: "The Death of the 90-Over Day and the Biomechanics of the Franchise Blitz",
     subtitle: "How 20-over cricket dismantled century-old rhythms, invented new bat speeds, and reconstructed the modern athlete.",
     category: "The Modern Era",
@@ -428,8 +434,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "lords-long-room-and-cathedrals",
-    slug: "lords-long-room-and-cathedrals",
+    id: "lords-cricket-ground-history",
+    slug: "lords-cricket-ground-history",
+    aliases: ["lords-long-room-and-cathedrals"],
     title: "Inside the Lord's Long Room: The Architectural Reverence of St John's Wood",
     subtitle: "Oil paintings of WG Grace, Victorian wrought iron, and the most hallowed ninety seconds in world sports.",
     category: "Sacred Grounds",
@@ -479,8 +486,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "anatomy-of-the-cover-drive",
-    slug: "anatomy-of-the-cover-drive",
+    id: "cricket-cover-drive-technique",
+    slug: "cricket-cover-drive-technique",
+    aliases: ["anatomy-of-the-cover-drive"],
     title: "The Anatomy of a Flawless Cover Drive: Where Biomechanics Meets Ballet",
     subtitle: "Dissecting the head position, high leading elbow, and weight transfer behind cricket's most photogenic stroke.",
     category: "Batting Technique",
@@ -530,8 +538,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "ashes-144-years-of-urns-and-animosity",
-    slug: "ashes-144-years-of-urns-and-animosity",
+    id: "ashes-cricket-history-rivalry",
+    slug: "ashes-cricket-history-rivalry",
+    aliases: ["ashes-144-years-of-urns-and-animosity"],
     title: "The Ashes: 144 Years of Urns, Animosity, and Timeless Theatre",
     subtitle: "How an obituary for English cricket in the Sporting Times birthed sport's most fiercely contested bilateral civil war.",
     category: "Rivalry & Lore",
@@ -581,8 +590,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "the-unsung-guardians-subcontinent-keeping",
-    slug: "the-unsung-guardians-subcontinent-keeping",
+    id: "cricket-wicketkeeping-techniques",
+    slug: "cricket-wicketkeeping-techniques",
+    aliases: ["the-unsung-guardians-subcontinent-keeping"],
     title: "The Unsung Guardians: Test Match Wicketkeeping on Day 5 Subcontinent Dustbowls",
     subtitle: "Crouching through 150 overs in 40°C heat, reading spin off the rough, and the razor-thin margin between bye and stumping.",
     category: "Wicketkeeping",
@@ -632,8 +642,9 @@ export const CRICKET_ARTICLES: CricketArticle[] = [
     ]
   },
   {
-    id: "mystery-spin-carrom-and-digitized-deception",
-    slug: "mystery-spin-carrom-and-digitized-deception",
+    id: "mystery-spin-carrom-ball",
+    slug: "mystery-spin-carrom-ball",
+    aliases: ["mystery-spin-carrom-and-digitized-deception"],
     title: "Mystery Spin, Carrom Balls, and the Digitization of Deception",
     subtitle: "From Jack Iverson's Australian bush grip to Ajantha Mendis and modern finger-spinners flicking with knuckles.",
     category: "Spin Mastery",

@@ -137,6 +137,19 @@ export const SeoKeywordMatrixModal: React.FC<SeoKeywordMatrixModalProps> = ({
                 </p>
               </div>
 
+              {row.goodUrlRules && (
+                <div className="p-2.5 bg-[#F4F9F5] rounded-lg border border-[#D1E7D8]">
+                  <div className="text-[10px] font-mono uppercase text-[#14532D] font-bold">
+                    Good URL Structure Rules Applied:
+                  </div>
+                  <ul className="mt-1 space-y-0.5 text-[11px] text-[#292524] list-disc list-inside font-sans">
+                    {row.goodUrlRules.map((rule, rIdx) => (
+                      <li key={rIdx}>{rule}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div className="p-2.5 bg-[#FBF9F5] rounded-lg border border-[#EBE4D8]">
                 <div className="text-[10px] font-mono uppercase text-[#78350F] font-semibold">
                   AEO Question Subheading (H2)
